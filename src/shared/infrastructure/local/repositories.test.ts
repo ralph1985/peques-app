@@ -55,6 +55,26 @@ describe("integridad de los repositorios locales", () => {
     expect(await ra.listWeightEntries()).toEqual([]);
     await expect(ra.createWeightEntry({ ...weight, weightGrams: NaN })).rejects.toThrow();
   });
+  it("toggles sleep transactionally while retaining the original timer kind and child", async () => {
+    const ra = new DexieSleepRepository(db, a.id);
+    const rb = new DexieSleepRepository(db, b.id);
+    const started = await ra.toggleSleepEntry("night", "2024-03-02T20:00:00.000Z");
+    expect(started.action).toBe("started");
+    expect(await rb.getActiveSleepEntry()).toBeNull();
+    const stopped = await ra.toggleSleepEntry("nap", "2024-03-03T06:00:00.000Z");
+    expect(stopped.action).toBe("stopped");
+    expect(stopped.entry).toMatchObject({
+      id: started.entry.id,
+      childId: a.id,
+      kind: "night",
+      endedAt: "2024-03-03T06:00:00.000Z",
+    });
+    expect(await ra.getActiveSleepEntry()).toBeNull();
+    expect(await ra.listSleepEntries()).toHaveLength(1);
+    await ra.toggleSleepEntry("nap", "2024-03-03T12:00:00.000Z");
+    await expect(ra.toggleSleepEntry("nap", "2024-03-03T11:00:00.000Z")).rejects.toThrow();
+    expect((await ra.getActiveSleepEntry())?.startedAt).toBe("2024-03-03T12:00:00.000Z");
+  });
   it("binds an applied vaccine to a plan belonging to the same child", async () => {
     const ra = new DexieVaccinePlanRepository(db, a.id);
     const rb = new DexieVaccinePlanRepository(db, b.id);

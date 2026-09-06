@@ -1,5 +1,3 @@
-import { registerSleepEntry } from "./create-sleep-entry";
-import { updateSleepEntry } from "./update-sleep-entry";
 import type { SleepRepository } from "./sleep-repository";
 import type { SleepEntry, SleepKind } from "../domain/sleep-entry";
 
@@ -9,32 +7,9 @@ export type ToggleSleepResult = {
 };
 
 export async function toggleSleepEntry(
-  repository: Pick<
-    SleepRepository,
-    "createSleepEntry" | "getActiveSleepEntry" | "updateSleepEntry"
-  >,
+  repository: Pick<SleepRepository, "toggleSleepEntry">,
   kind: SleepKind,
   now = new Date().toISOString(),
 ): Promise<ToggleSleepResult> {
-  const activeEntry = await repository.getActiveSleepEntry();
-
-  if (activeEntry) {
-    return {
-      action: "stopped",
-      entry: await updateSleepEntry(repository, activeEntry.id, {
-        endedAt: now,
-        kind: activeEntry.kind,
-        startedAt: activeEntry.startedAt,
-      }),
-    };
-  }
-
-  return {
-    action: "started",
-    entry: await registerSleepEntry(repository, {
-      endedAt: null,
-      kind,
-      startedAt: now,
-    }),
-  };
+  return repository.toggleSleepEntry(kind, now);
 }

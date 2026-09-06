@@ -1,5 +1,6 @@
 import type { SleepRepository } from "../application/sleep-repository";
-import { createSleepEntry, type NewSleepEntry } from "../domain/sleep-entry";
+import { createSleepEntry, type NewSleepEntry, type SleepKind } from "../domain/sleep-entry";
+import type { ToggleSleepResult } from "../application/toggle-sleep-entry";
 import type { PequesDatabase } from "@/shared/infrastructure/local/database";
 import { requireChild, requireOwned } from "@/shared/infrastructure/local/ownership";
 import { assert } from "@/shared/domain/validation";
@@ -9,6 +10,25 @@ export class DexieSleepRepository implements SleepRepository {
     private readonly db: PequesDatabase,
     readonly childId: string,
   ) {}
+  async toggleSleepEntry(kind: SleepKind, now: string): Promise<ToggleSleepResult> {
+    return this.db.transaction("rw", this.db.children, this.db.sleepEntries, async () => {
+      await requireChild(this.db, this.childId);
+      const active = await this.getActiveSleepEntry();
+      if (active)
+        return {
+          action: "stopped",
+          entry: await this.updateSleepEntry(active.id, {
+            kind: active.kind,
+            startedAt: active.startedAt,
+            endedAt: now,
+          }),
+        };
+      return {
+        action: "started",
+        entry: await this.createSleepEntry({ kind, startedAt: now, endedAt: null }),
+      };
+    });
+  }
   listSleepEntries() {
     return this.db.sleepEntries.where("childId").equals(this.childId).reverse().sortBy("startedAt");
   }
