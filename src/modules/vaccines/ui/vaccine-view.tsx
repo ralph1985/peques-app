@@ -7,12 +7,15 @@ import {
   getVaccineDoseStatusLabel,
   vaccineDoseStatuses,
   type PlannedVaccineDoseWithStatus,
+  type AppliedVaccineDose,
 } from "../domain/vaccine-calendar";
 import { updatePlannedVaccineDose } from "../application/update-planned-vaccine-dose";
 import { markVaccineDoseApplied } from "../application/mark-vaccine-dose-applied";
 import { updateAppliedVaccineDose } from "../application/update-applied-vaccine-dose";
 import { reopenPlannedVaccineDose } from "../application/reopen-planned-vaccine-dose";
-import { LocalForm, field } from "@/shared/ui/local-form";
+import { LocalForm, field, errorMessage } from "@/shared/ui/local-form";
+import { useClock } from "@/shared/ui/use-clock";
+import { StandaloneApplicationSheet } from "./standalone-application-sheet";
 import { BottomSheet } from "@/shared/ui/bottom-sheet";
 import { localDate } from "@/shared/domain/validation";
 import styles from "@/app/(app)/vacunas/page.module.css";
@@ -25,9 +28,22 @@ type EditState = {
 export function VaccineView({ childId, data }: { childId: string; data: ChildData }) {
   const { app, family } = usePeques();
   const [sheet, setSheet] = useState<EditState>(null);
-  const [now] = useState(() => new Date());
+  const [standalone, setStandalone] = useState<{
+    entry?: AppliedVaccineDose;
+    deleting?: boolean;
+  } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const now = useClock();
   const view = family.settings.vaccineView;
   const doses = assignPlannedVaccineDoseStatuses(data.planned, data.applied, now);
+  async function changeView(view: "status" | "timeline") {
+    try {
+      await app.settings.update({ vaccineView: view });
+      setError(null);
+    } catch (cause) {
+      setError(errorMessage(cause));
+    }
+  }
   const groups =
     view === "status"
       ? vaccineDoseStatuses.map((status) => ({
@@ -47,14 +63,14 @@ export function VaccineView({ childId, data }: { childId: string; data: ChildDat
           <button
             className="text-button"
             aria-pressed={view === "status"}
-            onClick={() => void app.settings.update({ vaccineView: "status" })}
+            onClick={() => void changeView("status")}
           >
             Por estado
           </button>
           <button
             className="text-button"
             aria-pressed={view === "timeline"}
-            onClick={() => void app.settings.update({ vaccineView: "timeline" })}
+            onClick={() => void changeView("timeline")}
           >
             Línea temporal
           </button>
@@ -143,6 +159,53 @@ export function VaccineView({ childId, data }: { childId: string; data: ChildDat
           </section>
         ))}
       </section>
+      {error && <p role="alert">{error}</p>}
+      <section className={styles.panel} aria-label="Vacunas fuera de la planificación">
+        <h2>Otras vacunas aplicadas</h2>
+        <p>Para registros que no corresponden a una dosis de la planificación.</p>
+        <button className="text-button" onClick={() => setStandalone({})}>
+          Añadir vacuna aplicada
+        </button>
+        <ul className="child-list">
+          {data.applied
+            .filter((dose) => dose.plannedDoseId === null)
+            .map((dose) => (
+              <li key={dose.id}>
+                <div>
+                  <strong>
+                    {dose.vaccineName} · {dose.doseLabel}
+                  </strong>
+                  <span>
+                    {dose.appliedOn} · {dose.place}
+                  </span>
+                  {dose.lot && <span>Lote: {dose.lot}</span>}
+                  {dose.notes && <span>{dose.notes}</span>}
+                </div>
+                <div className="row-actions">
+                  <button
+                    aria-label={`Editar aplicación de ${dose.vaccineName}`}
+                    onClick={() => setStandalone({ entry: dose })}
+                  >
+                    Editar
+                  </button>
+                  <button
+                    aria-label={`Borrar aplicación de ${dose.vaccineName}`}
+                    onClick={() => setStandalone({ entry: dose, deleting: true })}
+                  >
+                    Borrar
+                  </button>
+                </div>
+              </li>
+            ))}
+        </ul>
+      </section>
+      {standalone && (
+        <StandaloneApplicationSheet
+          childId={childId}
+          {...standalone}
+          onClose={() => setStandalone(null)}
+        />
+      )}
       {sheet && <VaccineSheet childId={childId} state={sheet} onClose={() => setSheet(null)} />}
     </>
   );
