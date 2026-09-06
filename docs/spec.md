@@ -1,0 +1,37 @@
+# Especificación de Peques
+
+## Producto
+
+PWA instalable, móvil y usable con una mano para consultar y anotar el seguimiento de varios hijos sin cuentas. Conserva el lenguaje visual del proyecto de referencia: gradientes suaves, tarjetas, navegación inferior de siete secciones, formularios en paneles inferiores y gráfica de peso ampliable.
+
+## Privacidad y persistencia
+
+Los datos familiares se almacenan exclusivamente en IndexedDB en el dispositivo. Peques no dispone de backend ni base de datos remota. Ninguna escritura usa HTTP. Los recursos estáticos, incluidos los payloads estáticos del router Next, no contienen información familiar.
+
+Borrar los datos del navegador, eliminar el almacenamiento del sitio o perder el dispositivo puede eliminar la información si no existe una copia exportada. Ni IndexedDB ni el JSON se cifran en esta versión. No hay cuentas, PIN, sesiones, cookies propias, trackers ni telemetría.
+
+## Hijos y aislamiento
+
+Sin hijos se muestra «Añade tu primer hijo». Nombre y fecha de nacimiento son obligatorios; hora, sexo e identificador sanitario son opcionales. Se usan UUID y timestamps UTC. Crear un hijo genera su plan vacunal según nacimiento, sin datos personales de ejemplo. El selector recuerda el último hijo.
+
+Cada peso, planificación, aplicación y descanso lleva `childId`. Los repositorios validan existencia y pertenencia dentro de las transacciones. Un identificador de otro hijo no permite editar ni borrar sus filas. Inicio, Peso, Vacunas, Sueño y Calendario cambian con el hijo activo. Viaje no cambia de contenido.
+
+En Ajustes se pueden añadir, editar y eliminar hijos. El borrado muestra los recuentos, ofrece exportar y exige escribir el nombre exacto. La eliminación de datos asociados y la selección de un hijo restante son atómicas. La lista familiar de Viaje se conserva.
+
+## Seguimiento
+
+Peso permite alta, edición, borrado, histórico, diferencia, promedio diario, filtro por lugar y gráfica SVG interactiva con estimaciones diarias entre registros. La ampliación es un diálogo. Las referencias OMS disponibles solo corresponden a niñas; para otros sexos se muestran los registros sin referencias incorrectas.
+
+Vacunas conserva estados pendiente, próxima, retrasada y aplicada, vistas por estado/edad, edición de fecha y dosis, lugar, lote y notas. Una aplicación puede reabrirse tras confirmación; el plan permanece. Las aplicaciones independientes son editables y borrables. No se inventan reglas médicas nuevas ni fechas de campañas.
+
+Sueño conserva siestas/noches, registro manual, edición del inicio, fin y tipo, historial agrupado y resumen diario. Los cronómetros sobreviven a navegación y reinicio porque se guardan sus timestamps. El atajo es una operación local atómica sobre el hijo activo.
+
+Viaje permite crear/editar/borrar categorías y ubicaciones jerárquicas, crear/editar/marcar/borrar elementos y reiniciar marcas. Los órdenes por preparación y ubicación son independientes. No se borran categorías ni ubicaciones todavía referenciadas. Las ubicaciones no pueden formar ciclos.
+
+Calendario tiene agenda y mes, eventos derivados de pesos, vacunas con fecha y sueño. «Todos los hijos» identifica cada evento y selecciona su hijo al abrir la sección de origen. No se utiliza un calendario remoto.
+
+## Copias y PWA
+
+Exportación explícita de todas las tablas, incluyendo configuración, ubicaciones y cronómetros activos. Importación con comprobación de formato, versión, tipos, UUID, unicidad, relaciones y ausencia de huérfanos; resumen previo y confirmación fuerte. Sustitución en una sola transacción con rollback. Límite de 25 MiB para archivos de copia.
+
+Serwist precachea únicamente archivos compilados de esta versión. La primera carga e instalación de esos archivos requiere conexión. Una vez preparado, abrir, consultar, añadir, editar y borrar no requiere red. La actualización de la aplicación no borra la base familiar y la recarga para aplicar una versión nueva es explícita.
