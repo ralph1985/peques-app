@@ -9,6 +9,7 @@ next-env.d.ts
 .env*
 .vercel/
 public/sw.js*
+public/icon-*.png
 public/swe-worker*
 *.log
 .DS_Store
