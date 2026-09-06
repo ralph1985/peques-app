@@ -1,3 +1,5 @@
+import { isDate } from "@/shared/domain/validation";
+
 export const sleepKinds = ["nap", "night"] as const;
 
 export type SleepKind = (typeof sleepKinds)[number];
@@ -85,5 +87,5 @@ function isIsoDateTime(value: string): boolean {
     return false;
   }
 
-  return !Number.isNaN(Date.parse(value));
+  return isDate(value.slice(0, 10)) && !Number.isNaN(Date.parse(value));
 }
