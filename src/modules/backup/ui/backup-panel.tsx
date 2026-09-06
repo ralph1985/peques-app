@@ -18,6 +18,10 @@ export function BackupExportButton() {
     try {
       const backup = await app.backup.export();
       const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+      assert(
+        blob.size <= maxBackupBytes,
+        "La copia supera 25 MiB. No se ha descargado un archivo que esta versión no pueda restaurar.",
+      );
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
