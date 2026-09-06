@@ -1,0 +1,17 @@
+node_modules/
+.next/
+out/
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+next-env.d.ts
+.env*
+.vercel/
+public/sw.js*
+public/swe-worker*
+*.log
+.DS_Store
+var/
+*backup*.json
+!package.json
