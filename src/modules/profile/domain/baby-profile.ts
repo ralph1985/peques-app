@@ -40,21 +40,28 @@ export function calculateAge(profile: BabyProfile, today: Date): BabyAge {
     return { days: 0, hours: 0, minutes: 0, months: 0, seconds: 0, years: 0 };
   }
 
-  let years = currentDate.getUTCFullYear() - birthDate.getUTCFullYear();
-  let months = currentDate.getUTCMonth() - birthDate.getUTCMonth();
-  let days = currentDate.getUTCDate() - birthDate.getUTCDate();
-
-  if (days < 0) {
-    months -= 1;
-    days += new Date(
-      Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), 0),
+  let completedMonths =
+    (currentDate.getUTCFullYear() - birthDate.getUTCFullYear()) * 12 +
+    currentDate.getUTCMonth() -
+    birthDate.getUTCMonth();
+  // Monthly anniversaries clamp to the last day of shorter months.
+  // Subtracting the previous month's length could yield negative days for January 31.
+  const anniversary = (months: number) => {
+    const first = new Date(
+      Date.UTC(birthDate.getUTCFullYear(), birthDate.getUTCMonth() + months, 1),
+    );
+    const lastDay = new Date(
+      Date.UTC(first.getUTCFullYear(), first.getUTCMonth() + 1, 0),
     ).getUTCDate();
-  }
-
-  if (months < 0) {
-    years -= 1;
-    months += 12;
-  }
+    first.setUTCDate(Math.min(birthDate.getUTCDate(), lastDay));
+    return first;
+  };
+  if (anniversary(completedMonths) > currentDate) completedMonths -= 1;
+  const years = Math.floor(completedMonths / 12);
+  const months = completedMonths % 12;
+  const days = Math.floor(
+    (currentDate.getTime() - anniversary(completedMonths).getTime()) / 86400000,
+  );
 
   const currentTime = getMadridDateTime(today);
   const [birthHour, birthMinute] = (profile.birthTime ?? "00:00").split(":").map(Number);
