@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { PequesRoot } from "./peques-root";
 
 export const metadata: Metadata = {
   title: { default: "Peques", template: "%s | Peques" },
@@ -13,7 +14,9 @@ export const viewport: Viewport = { width: "device-width", initialScale: 1, them
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es">
-      <body>{children}</body>
+      <body>
+        <PequesRoot>{children}</PequesRoot>
+      </body>
     </html>
   );
 }

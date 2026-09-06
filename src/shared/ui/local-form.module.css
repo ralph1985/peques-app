@@ -1,0 +1,69 @@
+.form,
+.fields {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.fields {
+  border: 0;
+}
+.fields label {
+  display: grid;
+  gap: 8px;
+  color: #5b426f;
+  font-size: 14px;
+  font-weight: 700;
+  min-width: 0;
+}
+.fields input,
+.fields select,
+.fields textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  border: 1px solid #d9c8e9;
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: #241335;
+  background: white;
+  font-size: 16px;
+}
+.fields input[type="checkbox"] {
+  width: 22px;
+  min-height: 22px;
+  accent-color: #7c3aed;
+}
+.fields p {
+  color: #6c567e;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 6px;
+}
+.primary,
+.secondary {
+  border: 0;
+  border-radius: 14px;
+  padding: 12px 18px;
+  min-height: 46px;
+  font-weight: 700;
+}
+.primary {
+  background: #7c3aed;
+  color: white;
+}
+.secondary {
+  background: #f3eafa;
+  color: #5b21b6;
+}
+.error {
+  padding: 12px;
+  border-radius: 12px;
+  background: #fff1f2;
+  color: #9f1239;
+  line-height: 1.5;
+}
