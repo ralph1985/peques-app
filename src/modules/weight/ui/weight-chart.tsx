@@ -58,6 +58,25 @@ export function WeightChart({ birthDate, entries, sex }: WeightChartProps) {
         event.preventDefault();
         closeExpandedChart();
       }
+      if (event.key === "Tab") {
+        const elements = [
+          ...(expandedChartRef.current?.querySelectorAll<HTMLElement>(
+            'button:not(:disabled), [tabindex="0"]',
+          ) ?? []),
+        ];
+        const first = elements[0];
+        const last = elements.at(-1);
+        if (
+          event.shiftKey &&
+          (document.activeElement === first || document.activeElement === expandedChartRef.current)
+        ) {
+          event.preventDefault();
+          last?.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first?.focus();
+        }
+      }
     }
 
     document.addEventListener("keydown", handleKeyDown);

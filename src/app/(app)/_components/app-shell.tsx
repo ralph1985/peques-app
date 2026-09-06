@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion, useReducedMotion, type Variants } from "motion/react";
+import { motion, useReducedMotion, type Variants } from "motion/react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
@@ -54,7 +54,7 @@ const reducedMotionVariants: Variants = {
 };
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
+  const pathname = usePathname().replace(/\/$/, "") || "/";
   const router = useRouter();
   const [optimisticNavigationState, setOptimisticNavigationState] =
     useState<OptimisticNavigationState>(() => ({
@@ -99,20 +99,17 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className={styles.page}>
       <div className={styles.view}>
-        <AnimatePresence custom={direction} initial={false} mode="popLayout">
-          <motion.div
-            animate="center"
-            className={styles.viewLayer}
-            custom={direction}
-            exit="exit"
-            initial="enter"
-            key={pathname}
-            transition={{ duration: shouldReduceMotion ? 0 : 0.26, ease: [0.32, 0.72, 0, 1] }}
-            variants={shouldReduceMotion ? reducedMotionVariants : viewVariants}
-          >
-            {children}
-          </motion.div>
-        </AnimatePresence>
+        <motion.div
+          animate="center"
+          className={styles.viewLayer}
+          custom={direction}
+          initial="enter"
+          key={pathname}
+          transition={{ duration: shouldReduceMotion ? 0 : 0.26, ease: [0.32, 0.72, 0, 1] }}
+          variants={shouldReduceMotion ? reducedMotionVariants : viewVariants}
+        >
+          {children}
+        </motion.div>
       </div>
 
       <nav className={styles.nav} aria-label="Navegacion principal">
