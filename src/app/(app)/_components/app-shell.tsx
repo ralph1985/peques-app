@@ -35,22 +35,17 @@ type OptimisticNavigationState = {
 const viewVariants: Variants = {
   enter: (direction: Direction) => ({
     opacity: direction === "none" ? 1 : 0,
-    x: getOffset(direction, "enter"),
+    x: getOffset(direction),
   }),
   center: {
     opacity: 1,
     x: 0,
   },
-  exit: (direction: Direction) => ({
-    opacity: direction === "none" ? 1 : 0,
-    x: getOffset(direction, "exit"),
-  }),
 };
 
 const reducedMotionVariants: Variants = {
   enter: { opacity: 1, x: 0 },
   center: { opacity: 1, x: 0 },
-  exit: { opacity: 1, x: 0 },
 };
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -162,16 +157,12 @@ function getDirection(previousPathname: string, pathname: string): Direction {
   return currentIndex > previousIndex ? "forward" : "backward";
 }
 
-function getOffset(direction: Direction, phase: "enter" | "exit"): string {
+function getOffset(direction: Direction): string {
   if (direction === "none") {
     return "0%";
   }
 
-  if (phase === "enter") {
-    return direction === "forward" ? "100%" : "-100%";
-  }
-
-  return direction === "forward" ? "-100%" : "100%";
+  return direction === "forward" ? "100%" : "-100%";
 }
 
 function TabIcon({ name }: { name: TabIcon }) {

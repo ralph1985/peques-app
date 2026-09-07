@@ -1,7 +1,6 @@
 "use client";
 
 import { type ButtonHTMLAttributes } from "react";
-import { useFormStatus } from "react-dom";
 import styles from "./pending-submit-button.module.css";
 
 type LoadingButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -35,25 +34,5 @@ export function LoadingButton({
       ) : null}
       {children}
     </button>
-  );
-}
-
-export function PendingSubmitButton({
-  children,
-  disabled,
-  pendingAriaLabel,
-  ...props
-}: Omit<LoadingButtonProps, "pending">) {
-  const { pending } = useFormStatus();
-
-  return (
-    <LoadingButton
-      {...props}
-      disabled={disabled}
-      pending={pending}
-      pendingAriaLabel={pendingAriaLabel}
-    >
-      {children}
-    </LoadingButton>
   );
 }
