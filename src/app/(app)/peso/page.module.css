@@ -96,19 +96,50 @@
   gap: 12px;
 }
 
+.chartIndicatorSelect {
+  display: grid;
+  gap: 6px;
+  color: #5b426f;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.chartIndicatorSelect select {
+  min-height: 42px;
+  min-width: 0;
+  max-width: 100%;
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  border-radius: 12px;
+  background: #fff;
+  color: #33213f;
+  font: inherit;
+  padding: 0 10px;
+}
+
 .chartHeader {
   display: flex;
+  min-width: 0;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
 }
 
+.chartHeader > p,
+.chartHeaderActions {
+  min-width: 0;
+}
+
 .chartHeaderActions {
   display: flex;
+  max-width: 100%;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
   justify-content: flex-end;
+}
+
+.chartHeaderActions .chartRangeToggle {
+  min-width: 0;
 }
 
 .chartHeader p {
@@ -135,6 +166,8 @@
 
 .chartRangeToggle {
   display: flex;
+  max-width: 100%;
+  overflow-x: auto;
   border: 1px solid rgba(124, 58, 237, 0.18);
   border-radius: 12px;
   overflow: hidden;
@@ -685,6 +718,18 @@
 
   .sheetFields {
     grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 619px) {
+  .chartHeader {
+    display: grid;
+    align-items: stretch;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .chartHeaderActions {
+    justify-content: flex-start;
   }
 }
 

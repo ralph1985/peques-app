@@ -67,6 +67,7 @@ export class DexieChildRepository implements ChildRepository {
       [
         this.db.children,
         this.db.weightEntries,
+        this.db.growthMeasurements,
         this.db.plannedVaccineDoses,
         this.db.appliedVaccineDoses,
         this.db.sleepEntries,
@@ -75,6 +76,7 @@ export class DexieChildRepository implements ChildRepository {
         await requireChild(this.db, id);
         return {
           weights: await this.db.weightEntries.where("childId").equals(id).count(),
+          growthMeasurements: await this.db.growthMeasurements.where("childId").equals(id).count(),
           plannedVaccines: await this.db.plannedVaccineDoses.where("childId").equals(id).count(),
           appliedVaccines: await this.db.appliedVaccineDoses.where("childId").equals(id).count(),
           sleep: await this.db.sleepEntries.where("childId").equals(id).count(),
@@ -88,6 +90,7 @@ export class DexieChildRepository implements ChildRepository {
       [
         this.db.children,
         this.db.weightEntries,
+        this.db.growthMeasurements,
         this.db.plannedVaccineDoses,
         this.db.appliedVaccineDoses,
         this.db.sleepEntries,
@@ -102,6 +105,7 @@ export class DexieChildRepository implements ChildRepository {
         await this.db.appliedVaccineDoses.where("childId").equals(id).delete();
         await this.db.plannedVaccineDoses.where("childId").equals(id).delete();
         await this.db.weightEntries.where("childId").equals(id).delete();
+        await this.db.growthMeasurements.where("childId").equals(id).delete();
         await this.db.sleepEntries.where("childId").equals(id).delete();
         await this.db.children.delete(id);
         if ((await this.db.settings.get("main"))?.activeChildId === id) {

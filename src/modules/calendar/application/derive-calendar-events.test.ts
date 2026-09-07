@@ -11,7 +11,13 @@ const child: Child = {
   createdAt: "2024-01-01T00:00:00.000Z",
   updatedAt: "2024-01-01T00:00:00.000Z",
 };
-const empty = (): ChildData => ({ weights: [], planned: [], applied: [], sleeps: [] });
+const empty = (): ChildData => ({
+  weights: [],
+  growthMeasurements: [],
+  planned: [],
+  applied: [],
+  sleeps: [],
+});
 
 describe("local derived calendar", () => {
   it("identifies children and excludes another child's records even with mixed input", () => {

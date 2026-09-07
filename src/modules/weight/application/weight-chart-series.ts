@@ -6,7 +6,7 @@ import {
   WeightPercentile,
 } from "./who-weight-for-age";
 
-export type WeightChartRange = "current" | "twoYears" | "fourYears";
+export type WeightChartRange = "current" | "twoYears" | "fourYears" | "tenYears" | "nineteenYears";
 
 export type WeightChartPoint = {
   ageDays: number;
@@ -101,7 +101,11 @@ export function buildWeightChartSeries(
       ? 24 * (365.25 / 12)
       : range === "fourYears"
         ? 48 * (365.25 / 12)
-        : latestAgeDays;
+        : range === "tenYears"
+          ? 10 * 365.25
+          : range === "nineteenYears"
+            ? 19 * 365.25
+            : latestAgeDays;
   const referencePoints = buildWhoWeightForAgeReferences(maxAgeDays, sex);
   const weights = sortedEntries.map((entry) => entry.weightGrams);
   const minWeight = Math.min(...weights);

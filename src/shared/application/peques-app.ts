@@ -8,6 +8,8 @@ import type { SleepRepository } from "@/modules/sleep/application/sleep-reposito
 import type { VaccinePlanRepository } from "@/modules/vaccines/application/vaccine-plan-repository";
 import type { TravelChecklistRepository } from "@/modules/travel/application/travel-checklist-repository";
 import type { WeightEntry } from "@/modules/weight/domain/weight-entry";
+import type { GrowthMeasurement } from "@/modules/growth/domain/growth-measurement";
+import type { GrowthMeasurementRepository } from "@/modules/growth/application/growth-measurement-repository";
 import type { SleepEntry } from "@/modules/sleep/domain/sleep-entry";
 import type {
   PlannedVaccineDose,
@@ -18,6 +20,7 @@ import type { TravelChecklist } from "@/modules/travel/application/list-travel-c
 export type FamilyState = { children: Child[]; activeChild: Child | null; settings: AppSettings };
 export type ChildData = {
   weights: WeightEntry[];
+  growthMeasurements: GrowthMeasurement[];
   sleeps: SleepEntry[];
   planned: PlannedVaccineDose[];
   applied: AppliedVaccineDose[];
@@ -30,6 +33,7 @@ export interface PequesApp {
   travel: TravelChecklistRepository;
   forChild(childId: string): {
     weight: WeightRepository;
+    growth: GrowthMeasurementRepository;
     sleep: SleepRepository;
     vaccines: VaccinePlanRepository;
   };

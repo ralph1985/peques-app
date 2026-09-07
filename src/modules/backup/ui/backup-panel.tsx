@@ -113,6 +113,8 @@ export function BackupPanel() {
             <dd>{counts.children}</dd>
             <dt>Pesos</dt>
             <dd>{counts.weightEntries}</dd>
+            <dt>Medidas de crecimiento</dt>
+            <dd>{counts.growthMeasurements}</dd>
             <dt>Vacunas planificadas</dt>
             <dd>{counts.plannedVaccineDoses}</dd>
             <dt>Vacunas aplicadas</dt>

@@ -4,7 +4,13 @@ import { WeightView } from "@/modules/weight/ui/weight-view";
 export default function WeightPage() {
   return (
     <ChildPage title="Peso">
-      {(child, data) => <WeightView child={child} entries={data.weights} />}
+      {(child, data) => (
+        <WeightView
+          child={child}
+          entries={data.weights}
+          growthMeasurements={data.growthMeasurements}
+        />
+      )}
     </ChildPage>
   );
 }

@@ -91,6 +91,8 @@ export function ChildManager() {
                 <dl className="count-grid">
                   <dt>Pesos</dt>
                   <dd>{sheet.counts.weights}</dd>
+                  <dt>Medidas</dt>
+                  <dd>{sheet.counts.growthMeasurements}</dd>
                   <dt>Vacunas planificadas</dt>
                   <dd>{sheet.counts.plannedVaccines}</dd>
                   <dt>Vacunas aplicadas</dt>

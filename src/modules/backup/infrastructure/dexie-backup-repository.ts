@@ -8,11 +8,12 @@ export class DexieBackupRepository implements BackupRepository {
     return this.db.transaction("r", this.db.tables, async () =>
       validateBackup({
         format: "peques-backup",
-        schemaVersion: 1,
+        schemaVersion: 2,
         exportedAt: new Date().toISOString(),
         data: {
           children: await this.db.children.toArray(),
           weightEntries: await this.db.weightEntries.toArray(),
+          growthMeasurements: await this.db.growthMeasurements.toArray(),
           plannedVaccineDoses: await this.db.plannedVaccineDoses.toArray(),
           appliedVaccineDoses: await this.db.appliedVaccineDoses.toArray(),
           sleepEntries: await this.db.sleepEntries.toArray(),
@@ -31,6 +32,7 @@ export class DexieBackupRepository implements BackupRepository {
       for (const table of this.db.tables) await table.clear();
       await this.db.children.bulkAdd(data.children);
       await this.db.weightEntries.bulkAdd(data.weightEntries);
+      await this.db.growthMeasurements.bulkAdd(data.growthMeasurements);
       await this.db.plannedVaccineDoses.bulkAdd(data.plannedVaccineDoses);
       await this.db.appliedVaccineDoses.bulkAdd(data.appliedVaccineDoses);
       await this.db.sleepEntries.bulkAdd(data.sleepEntries);

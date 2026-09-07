@@ -102,6 +102,16 @@ describe("copia completa y restauración atómica", () => {
       await other.delete();
     }
   });
+  it("accepts version 1 backups without growth measurements", () => {
+    const legacy = structuredClone(backup);
+    legacy.schemaVersion = 1;
+    Reflect.deleteProperty(legacy.data, "growthMeasurements");
+
+    const parsed = parseBackup(JSON.stringify(legacy));
+
+    expect(parsed.schemaVersion).toBe(1);
+    expect(parsed.data.growthMeasurements).toEqual([]);
+  });
   it("restores by replacement rather than merging records or generating extra vaccines", async () => {
     await new DexieChildRepository(db).create({
       name: "Peque ficticio temporal",
@@ -134,7 +144,7 @@ describe("copia completa y restauración atómica", () => {
     [
       "future version",
       (value) => {
-        Object.assign(value, { schemaVersion: 2 });
+        Object.assign(value, { schemaVersion: 3 });
       },
     ],
     [

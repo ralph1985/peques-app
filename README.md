@@ -26,7 +26,7 @@ pnpm start
 ## Funcionalidades
 
 - Hijos: alta, edición, selector rápido y borrado confirmado con resumen y cascada transaccional.
-- Peso: historial, diferencias, promedio diario, filtros y gráfica ampliable. Las referencias OMS heredadas solo se muestran para niñas; no se inventan referencias masculinas.
+- Crecimiento: historial de pesos, longitud/estatura y perímetro cefálico, con gráficas OMS por sexo de peso, talla, IMC y peso para talla. El IMC y el peso para talla se derivan de medidas del mismo día; las referencias son orientativas.
 - Vacunas: planificación independiente según nacimiento, estados, edición, aplicación y reapertura. También se admiten aplicaciones fuera del plan. Calendario orientativo de Madrid 2026, con campañas por confirmar.
 - Sueño: noche, siesta, registro manual, historial, resumen y cronómetro reconstruido desde timestamps persistidos.
 - Viaje familiar: categorías, ubicaciones y compartimentos, marcado, edición, borrado, reinicio y órdenes independientes por categoría y ubicación.

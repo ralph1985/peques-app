@@ -1,0 +1,147 @@
+"use client";
+
+import { useState } from "react";
+import type { GrowthMeasurement } from "../domain/growth-measurement";
+import {
+  buildGrowthChartPath,
+  buildGrowthChartSeries,
+  type GrowthChartRange,
+} from "../application/growth-chart-series";
+import type { GrowthIndicator } from "../application/who-growth";
+import type { WeightEntry } from "@/modules/weight/domain/weight-entry";
+import styles from "@/app/(app)/peso/page.module.css";
+
+const labels: Record<GrowthIndicator, string> = {
+  weightForAge: "Peso para la edad",
+  statureForAge: "Longitud / estatura para la edad",
+  bmiForAge: "IMC para la edad",
+  headCircumferenceForAge: "Perímetro cefálico para la edad",
+  weightForLength: "Peso para la longitud",
+  weightForHeight: "Peso para la estatura",
+};
+
+export function GrowthChart({
+  indicator,
+  birthDate,
+  sex,
+  weights,
+  measurements,
+}: {
+  indicator: Exclude<GrowthIndicator, "weightForAge">;
+  birthDate: string;
+  sex: "female" | "male" | "unspecified" | undefined;
+  weights: WeightEntry[];
+  measurements: GrowthMeasurement[];
+}) {
+  const [range, setRange] = useState<GrowthChartRange>("current");
+  const series = buildGrowthChartSeries(indicator, birthDate, sex, weights, measurements, range);
+  if (!series.points.length) {
+    return <p className={styles.empty}>Registra los datos necesarios para mostrar esta gráfica.</p>;
+  }
+  const reference = sex === "female" || sex === "male";
+  return (
+    <div className={styles.chart}>
+      <div className={styles.chartHeader}>
+        <p>
+          {reference
+            ? "Referencia OMS orientativa. No sustituye una revisión médica."
+            : "Se muestran tus registros. Selecciona el sexo para añadir referencias OMS."}
+        </p>
+        <GrowthRangeToggle range={range} onRangeChange={setRange} />
+      </div>
+      <div className={styles.chartCanvas} aria-label={labels[indicator]}>
+        <svg viewBox={`0 0 ${series.width} ${series.height}`} role="img">
+          <title>{labels[indicator]}</title>
+          <desc>Registros y referencias OMS de {labels[indicator].toLocaleLowerCase()}.</desc>
+          {series.curves.map((curve) => (
+            <g className={styles.chartReferenceGroup} key={curve.label}>
+              <path
+                className={`${styles.chartReferenceCurve} ${curve.label === "P50" ? styles.chartReferenceCurveMedian : ""}`}
+                d={buildGrowthChartPath(curve.points)}
+              />
+              {curve.points.at(-1) && (
+                <text
+                  className={styles.chartReferenceLabel}
+                  x={curve.points.at(-1)!.x}
+                  y={curve.points.at(-1)!.y - 3}
+                  textAnchor="end"
+                >
+                  {curve.label}
+                </text>
+              )}
+            </g>
+          ))}
+          {series.points.length > 1 && (
+            <path className={styles.chartLine} d={buildGrowthChartPath(series.points)} />
+          )}
+          {series.points.map((point) => (
+            <circle
+              className={styles.chartLatestPoint}
+              cx={point.x}
+              cy={point.y}
+              key={`${point.date}-${point.value}`}
+              r="4"
+            />
+          ))}
+          <text className={styles.chartDate} x="42" y={series.height - 6}>
+            {series.xUnit === "age"
+              ? "Nacimiento"
+              : series.xUnit === "length"
+                ? "Medida"
+                : "Medida"}
+          </text>
+        </svg>
+      </div>
+      <div className={styles.chartLegend}>
+        <span>{labels[indicator]}</span>
+        {reference && <span>Referencia OMS: P3 P15 P50 P85 P97</span>}
+      </div>
+      <div className={styles.chartMeta}>
+        <span>
+          Mínimo <strong>{formatValue(series.min, series.unit)}</strong>
+        </span>
+        <span className={styles.chartMetaPrimary}>
+          Último <strong>{formatValue(series.points.at(-1)?.value ?? 0, series.unit)}</strong>
+        </span>
+        <span>
+          Máximo <strong>{formatValue(series.max, series.unit)}</strong>
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function GrowthRangeToggle({
+  range,
+  onRangeChange,
+}: {
+  range: GrowthChartRange;
+  onRangeChange: (range: GrowthChartRange) => void;
+}) {
+  const values: Array<[GrowthChartRange, string]> = [
+    ["current", "Actual"],
+    ["twoYears", "2 años"],
+    ["fourYears", "4 años"],
+    ["tenYears", "10 años"],
+    ["nineteenYears", "19 años"],
+  ];
+  return (
+    <div className={styles.chartRangeToggle} aria-label="Rango de edad de la gráfica">
+      {values.map(([value, label]) => (
+        <button
+          aria-pressed={range === value}
+          className={range === value ? styles.chartRangeButtonActive : styles.chartRangeButton}
+          key={value}
+          onClick={() => onRangeChange(value)}
+          type="button"
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function formatValue(value: number, unit: string) {
+  return `${value.toLocaleString("es-ES", { maximumFractionDigits: unit === "kg/m²" ? 1 : 1 })} ${unit}`;
+}

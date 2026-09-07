@@ -11,6 +11,11 @@ import {
   type AppliedVaccineDose,
 } from "@/modules/vaccines/domain/vaccine-calendar";
 import { createSleepEntry, isSleepKind, type SleepEntry } from "@/modules/sleep/domain/sleep-entry";
+import {
+  createGrowthMeasurement,
+  growthMeasurementKinds,
+  type GrowthMeasurement,
+} from "@/modules/growth/domain/growth-measurement";
 import type {
   TravelChecklistCategoryDefinition,
   TravelChecklistItem,
@@ -30,6 +35,7 @@ import {
 export type BackupData = {
   children: Child[];
   weightEntries: WeightEntry[];
+  growthMeasurements: GrowthMeasurement[];
   plannedVaccineDoses: PlannedVaccineDose[];
   appliedVaccineDoses: AppliedVaccineDose[];
   sleepEntries: SleepEntry[];
@@ -40,13 +46,14 @@ export type BackupData = {
 };
 export type PequesBackup = {
   format: "peques-backup";
-  schemaVersion: 1;
+  schemaVersion: 1 | 2;
   exportedAt: string;
   data: BackupData;
 };
 export const backupTables = [
   "children",
   "weightEntries",
+  "growthMeasurements",
   "plannedVaccineDoses",
   "appliedVaccineDoses",
   "sleepEntries",
@@ -59,8 +66,8 @@ export const maxBackupBytes = 25 * 1024 * 1024;
 
 function record(
   value: unknown,
-  required: string[],
-  optional: string[] = [],
+  required: readonly string[],
+  optional: readonly string[] = [],
 ): Record<string, unknown> {
   assert(
     value !== null && typeof value === "object" && !Array.isArray(value),
@@ -148,6 +155,23 @@ function parseWeight(value: unknown): WeightEntry {
       measuredOn: date(row.measuredOn),
       weightGrams: row.weightGrams,
       place: row.place,
+      notes: nullableText(row.notes),
+    }),
+    ...owned(row),
+  };
+}
+function parseGrowthMeasurement(value: unknown): GrowthMeasurement {
+  const row = record(value, ["id", "childId", "measuredOn", "kind", "valueMillimeters"], ["notes"]);
+  assert(
+    typeof row.kind === "string" && growthMeasurementKinds.includes(row.kind as never),
+    "Tipo de medida de crecimiento no válido.",
+  );
+  assert(typeof row.valueMillimeters === "number", "Valor de crecimiento no válido.");
+  return {
+    ...createGrowthMeasurement({
+      measuredOn: date(row.measuredOn),
+      kind: row.kind as GrowthMeasurement["kind"],
+      valueMillimeters: row.valueMillimeters,
       notes: nullableText(row.notes),
     }),
     ...owned(row),
@@ -290,11 +314,20 @@ function array<T>(value: unknown, parse: (row: unknown) => T): T[] {
 export function validateBackup(value: unknown): PequesBackup {
   const root = record(value, ["format", "schemaVersion", "exportedAt", "data"]);
   assert(root.format === "peques-backup", "El archivo no es una copia de Peques.");
-  assert(root.schemaVersion === 1, "Esta versión de copia no es compatible con Peques.");
-  const raw = record(root.data, [...backupTables]);
+  assert(
+    root.schemaVersion === 1 || root.schemaVersion === 2,
+    "Esta versión de copia no es compatible con Peques.",
+  );
+  const requiredTables =
+    root.schemaVersion === 1
+      ? backupTables.filter((name) => name !== "growthMeasurements")
+      : backupTables;
+  const raw = record(root.data, requiredTables);
   const data: BackupData = {
     children: array(raw.children, parseChild),
     weightEntries: array(raw.weightEntries, parseWeight),
+    growthMeasurements:
+      root.schemaVersion === 1 ? [] : array(raw.growthMeasurements, parseGrowthMeasurement),
     plannedVaccineDoses: array(raw.plannedVaccineDoses, parsePlanned),
     appliedVaccineDoses: array(raw.appliedVaccineDoses, parseApplied),
     sleepEntries: array(raw.sleepEntries, parseSleep),
@@ -363,7 +396,7 @@ export function validateBackup(value: unknown): PequesBackup {
   );
   return {
     format: "peques-backup",
-    schemaVersion: 1,
+    schemaVersion: root.schemaVersion,
     exportedAt: timestamp(root.exportedAt),
     data,
   };

@@ -1,6 +1,6 @@
 # Copias locales
 
-La copia es un JSON sin cifrar con `format: "peques-backup"`, `schemaVersion: 1`, `exportedAt` en UTC y `data` con todas las tablas documentadas en el esquema. Incluye los hijos, la selección activa, cronómetros en curso, categorías, ubicaciones y ambos órdenes de Viaje.
+La copia es un JSON sin cifrar con `format: "peques-backup"`, `schemaVersion: 2`, `exportedAt` en UTC y `data` con todas las tablas documentadas en el esquema. Incluye los hijos, pesos, medidas de crecimiento, la selección activa, cronómetros en curso, categorías, ubicaciones y ambos órdenes de Viaje. Las copias v1 se pueden importar y se convierten con la tabla de medidas vacía.
 
 La lectura se hace en una transacción consistente. La restauración sustituye todos los datos locales; no combina copias de distintos dispositivos. El archivo se valida antes de mostrar el resumen y de nuevo antes de comenzar la transacción de escritura. Se comprueban campos, tipos, fechas, UUID, duplicados, relaciones, pertenencia de aplicaciones de vacunas y unicidad de cronómetros por hijo. Se rechazan versiones futuras, campos desconocidos y ubicaciones cíclicas.
 

@@ -14,6 +14,9 @@ const nextConfig: NextConfig = {
   output: "export",
   trailingSlash: true,
   poweredByHeader: false,
+  experimental: {
+    useTypeScriptCli: false,
+  },
 };
 
 export default withSerwist(nextConfig);

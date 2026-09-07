@@ -1,6 +1,7 @@
 import Dexie, { type Table } from "dexie";
 import type { Child } from "@/modules/profile/domain/child";
 import type { WeightEntry } from "@/modules/weight/domain/weight-entry";
+import type { GrowthMeasurement } from "@/modules/growth/domain/growth-measurement";
 import type {
   PlannedVaccineDose,
   AppliedVaccineDose,
@@ -16,6 +17,7 @@ import { defaultSettings, type AppSettings } from "@/modules/settings/domain/set
 export class PequesDatabase extends Dexie {
   children!: Table<Child, string>;
   weightEntries!: Table<WeightEntry, string>;
+  growthMeasurements!: Table<GrowthMeasurement, string>;
   plannedVaccineDoses!: Table<PlannedVaccineDose, string>;
   appliedVaccineDoses!: Table<AppliedVaccineDose, string>;
   sleepEntries!: Table<SleepEntry, string>;
@@ -29,6 +31,19 @@ export class PequesDatabase extends Dexie {
     this.version(1).stores({
       children: "id, createdAt",
       weightEntries: "id, childId, [childId+measuredOn]",
+      plannedVaccineDoses: "id, childId, [childId+plannedDate]",
+      appliedVaccineDoses: "id, childId, &plannedDoseId, [childId+appliedOn]",
+      sleepEntries: "id, childId, [childId+startedAt]",
+      travelChecklistCategories: "slug, sortOrder",
+      travelChecklistItems:
+        "id, category, storageLocationId, [category+sortOrder], [storageLocationId+storageSortOrder]",
+      travelStorageLocations: "id, parentId, sortOrder",
+      settings: "id",
+    });
+    this.version(2).stores({
+      children: "id, createdAt",
+      weightEntries: "id, childId, [childId+measuredOn]",
+      growthMeasurements: "id, childId, [childId+measuredOn]",
       plannedVaccineDoses: "id, childId, [childId+plannedDate]",
       appliedVaccineDoses: "id, childId, &plannedDoseId, [childId+appliedOn]",
       sleepEntries: "id, childId, [childId+startedAt]",

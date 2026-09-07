@@ -2,6 +2,7 @@ import type { Child, ChildInput } from "../domain/child";
 
 export type ChildDataCounts = {
   weights: number;
+  growthMeasurements: number;
   plannedVaccines: number;
   appliedVaccines: number;
   sleep: number;

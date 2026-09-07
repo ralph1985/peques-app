@@ -18,6 +18,9 @@ import {
   type WeightFilter,
 } from "../application/weight-filter";
 import { WeightChart } from "./weight-chart";
+import { GrowthChart } from "@/modules/growth/ui/growth-chart";
+import { GrowthMeasurementPanel } from "@/modules/growth/ui/growth-measurement-view";
+import type { GrowthIndicator } from "@/modules/growth/application/who-growth";
 import styles from "@/app/(app)/peso/page.module.css";
 
 export function WeightForm({
@@ -122,9 +125,18 @@ export function WeightCreateButton({
   );
 }
 
-export function WeightView({ child, entries }: { child: Child; entries: WeightEntry[] }) {
+export function WeightView({
+  child,
+  entries,
+  growthMeasurements,
+}: {
+  child: Child;
+  entries: WeightEntry[];
+  growthMeasurements: import("@/modules/growth/domain/growth-measurement").GrowthMeasurement[];
+}) {
   const { app } = usePeques();
   const [filter, setFilter] = useState<WeightFilter>("all");
+  const [indicator, setIndicator] = useState<GrowthIndicator>("weightForAge");
   const [sheet, setSheet] = useState<{ mode: "edit" | "delete"; entry: WeightEntry } | null>(null);
   const visible = useMemo(() => filterWeightEntries(entries, filter), [entries, filter]);
   return (
@@ -146,7 +158,32 @@ export function WeightView({ child, entries }: { child: Child; entries: WeightEn
             </button>
           ))}
         </div>
-        <WeightChart birthDate={child.birthDate} sex={child.sex} entries={visible} />
+        <label className={styles.chartIndicatorSelect}>
+          Gráfica
+          <select
+            name="growth-indicator"
+            value={indicator}
+            onChange={(event) => setIndicator(event.target.value as GrowthIndicator)}
+          >
+            <option value="weightForAge">Peso para la edad</option>
+            <option value="statureForAge">Longitud / estatura para la edad</option>
+            <option value="bmiForAge">IMC para la edad</option>
+            <option value="headCircumferenceForAge">Perímetro cefálico para la edad</option>
+            <option value="weightForLength">Peso para la longitud</option>
+            <option value="weightForHeight">Peso para la estatura</option>
+          </select>
+        </label>
+        {indicator === "weightForAge" ? (
+          <WeightChart birthDate={child.birthDate} sex={child.sex} entries={visible} />
+        ) : (
+          <GrowthChart
+            indicator={indicator}
+            birthDate={child.birthDate}
+            sex={child.sex}
+            weights={visible}
+            measurements={growthMeasurements}
+          />
+        )}
       </section>
       <section className={styles.panel}>
         <h2>Histórico</h2>
@@ -189,6 +226,7 @@ export function WeightView({ child, entries }: { child: Child; entries: WeightEn
           ))}
         </ol>
       </section>
+      <GrowthMeasurementPanel childId={child.id} measurements={growthMeasurements} />
       <WeightCreateButton childId={child.id} />
       {sheet && (
         <BottomSheet

@@ -3,6 +3,7 @@ import { getDatabase, type PequesDatabase } from "./database";
 import type { PequesApp, Watch } from "@/shared/application/peques-app";
 import { DexieChildRepository } from "@/modules/profile/infrastructure/dexie-child-repository";
 import { DexieWeightRepository } from "@/modules/weight/infrastructure/dexie-weight-repository";
+import { DexieGrowthMeasurementRepository } from "@/modules/growth/infrastructure/dexie-growth-measurement-repository";
 import { DexieSleepRepository } from "@/modules/sleep/infrastructure/dexie-sleep-repository";
 import { DexieVaccinePlanRepository } from "@/modules/vaccines/infrastructure/dexie-vaccine-plan-repository";
 import { DexieTravelChecklistRepository } from "@/modules/travel/infrastructure/dexie-travel-checklist-repository";
@@ -23,6 +24,7 @@ export function createPequesApp(db: PequesDatabase = getDatabase()): PequesApp {
   const travel = new DexieTravelChecklistRepository(db);
   const forChild: PequesApp["forChild"] = (childId) => ({
     weight: new DexieWeightRepository(db, childId),
+    growth: new DexieGrowthMeasurementRepository(db, childId),
     sleep: new DexieSleepRepository(db, childId),
     vaccines: new DexieVaccinePlanRepository(db, childId),
   });
@@ -30,6 +32,7 @@ export function createPequesApp(db: PequesDatabase = getDatabase()): PequesApp {
     const repositories = forChild(childId);
     return {
       weights: await repositories.weight.listWeightEntries(),
+      growthMeasurements: await repositories.growth.listGrowthMeasurements(),
       sleeps: await repositories.sleep.listSleepEntries(),
       planned: await repositories.vaccines.listPlannedVaccineDoses(),
       applied: await repositories.vaccines.listAppliedVaccineDoses(),
@@ -53,6 +56,7 @@ export function createPequesApp(db: PequesDatabase = getDatabase()): PequesApp {
         db.transaction(
           "r",
           db.weightEntries,
+          db.growthMeasurements,
           db.sleepEntries,
           db.plannedVaccineDoses,
           db.appliedVaccineDoses,
@@ -74,6 +78,7 @@ export function createPequesApp(db: PequesDatabase = getDatabase()): PequesApp {
         [
           db.children,
           db.weightEntries,
+          db.growthMeasurements,
           db.sleepEntries,
           db.plannedVaccineDoses,
           db.appliedVaccineDoses,

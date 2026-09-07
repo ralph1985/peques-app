@@ -96,7 +96,7 @@ export function WeightChart({ birthDate, entries, sex }: WeightChartProps) {
     <div className={styles.chart}>
       <div className={styles.chartHeader}>
         <p>
-          {sex === "female"
+          {sex === "female" || sex === "male"
             ? "Referencia OMS orientativa. No sustituye una revisión médica."
             : "Evolución del peso. Referencias OMS no disponibles para este sexo."}
         </p>
@@ -123,7 +123,7 @@ export function WeightChart({ birthDate, entries, sex }: WeightChartProps) {
         selectedPoint={selectedPoint}
         onPointSelect={setSelectedPoint}
       />
-      {sex === "female" && <WeightChartLegend />}
+      {(sex === "female" || sex === "male") && <WeightChartLegend />}
       <WeightChartMeta
         latestPoint={latestPoint}
         maxWeight={series.maxWeight}
@@ -149,7 +149,9 @@ export function WeightChart({ birthDate, entries, sex }: WeightChartProps) {
               <div>
                 <p>Peso</p>
                 <h2 id="weight-chart-fullscreen-title">
-                  {sex === "female" ? "Evolución y referencia OMS" : "Evolución del peso"}
+                  {sex === "female" || sex === "male"
+                    ? "Evolución y referencia OMS"
+                    : "Evolución del peso"}
                 </h2>
               </div>
               <WeightChartRangeToggle range={range} onRangeChange={setRange} />
@@ -174,7 +176,7 @@ export function WeightChart({ birthDate, entries, sex }: WeightChartProps) {
                 onPointSelect={setSelectedPoint}
               />
             </div>
-            {sex === "female" && <WeightChartLegend />}
+            {(sex === "female" || sex === "male") && <WeightChartLegend />}
             <WeightChartMeta
               latestPoint={latestPoint}
               maxWeight={series.maxWeight}
@@ -219,6 +221,24 @@ function WeightChartRangeToggle({
         type="button"
       >
         4 años
+      </button>
+      <button
+        aria-pressed={range === "tenYears"}
+        className={range === "tenYears" ? styles.chartRangeButtonActive : styles.chartRangeButton}
+        onClick={() => onRangeChange("tenYears")}
+        type="button"
+      >
+        10 años
+      </button>
+      <button
+        aria-pressed={range === "nineteenYears"}
+        className={
+          range === "nineteenYears" ? styles.chartRangeButtonActive : styles.chartRangeButton
+        }
+        onClick={() => onRangeChange("nineteenYears")}
+        type="button"
+      >
+        19 años
       </button>
     </div>
   );
@@ -298,8 +318,7 @@ function WeightChartSvg({
         <desc id={`${idPrefix}-description`}>
           Peso entre {series.minWeight.toLocaleString("es-ES")} y{" "}
           {series.maxWeight.toLocaleString("es-ES")} gramos.
-          {series.referenceCurves.length > 0 &&
-            " Con referencia OMS de peso para la edad en niñas."}
+          {series.referenceCurves.length > 0 && " Con referencia OMS de peso para la edad."}
         </desc>
         {series.ticks.map((tick) => (
           <g className={styles.chartTick} key={tick.value}>

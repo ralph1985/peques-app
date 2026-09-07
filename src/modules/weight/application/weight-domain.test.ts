@@ -69,8 +69,8 @@ describe("retained weight domain", () => {
     expect(buildWeightChartPath([])).toBe("");
     expect(buildWeightChartAreaPath([])).toBe("");
   });
-  it.each(["male", "unspecified", undefined] as const)(
-    "never applies female references for sex %s",
+  it.each(["unspecified", undefined] as const)(
+    "does not apply sex-specific references for sex %s",
     (sex) => {
       const chart = buildWeightChartSeries(
         [entry("2024-04-01", 6000)],
@@ -84,8 +84,9 @@ describe("retained weight domain", () => {
       expect(Number.isFinite(chart.points[0].x) && Number.isFinite(chart.points[0].y)).toBe(true);
     },
   );
-  it("retains documented female reference data and daily interpolation", () => {
-    expect(calculateWhoWeightForAgeGrams(0, "P50")).toBe(3200);
+  it("uses the official female and male reference data and daily interpolation", () => {
+    expect(calculateWhoWeightForAgeGrams(0, "P50")).toBe(3232);
+    expect(calculateWhoWeightForAgeGrams(0, "P50", "male")).toBe(3346);
     const chart = buildWeightChartSeries(
       [entry("2024-04-01", 6000), entry("2024-04-04", 6150)],
       "2024-01-01",
@@ -96,5 +97,11 @@ describe("retained weight domain", () => {
     expect(chart.estimatePoints.map((point) => point.weightGrams)).toEqual([6050, 6100, 6150]);
     expect(buildWeightChartPath(chart.points)).toMatch(/^M .+ L /);
     expect(buildWeightChartAreaPath(chart.points)).toMatch(/Z$/);
+  });
+  it("applies the official male reference curves", () => {
+    expect(
+      buildWeightChartSeries([entry("2024-04-01", 6000)], "2024-01-01", "current", "male")
+        .referenceCurves,
+    ).toHaveLength(5);
   });
 });

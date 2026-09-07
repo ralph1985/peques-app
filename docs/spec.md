@@ -20,7 +20,7 @@ En Ajustes se pueden añadir, editar y eliminar hijos. El borrado muestra los re
 
 ## Seguimiento
 
-Peso permite alta, edición, borrado, histórico, diferencia, promedio diario, filtro por lugar y gráfica SVG interactiva con estimaciones diarias entre registros. La ampliación es un diálogo. Las referencias OMS disponibles solo corresponden a niñas; para otros sexos se muestran los registros sin referencias incorrectas.
+Crecimiento mantiene el alta, edición, borrado, histórico, diferencia y promedio del peso, y añade longitud/estatura y perímetro cefálico. `/peso` ofrece gráficas SVG de peso, talla, IMC, perímetro cefálico y peso para longitud/estatura. El IMC y el peso para longitud/estatura sólo aparecen con peso y talla del mismo día. Las referencias OMS son sexoespecíficas, locales y orientativas: peso para edad hasta 10 años, talla e IMC hasta 19, y perímetro cefálico/peso para talla hasta 5.
 
 Vacunas conserva estados pendiente, próxima, retrasada y aplicada, vistas por estado/edad, edición de fecha y dosis, lugar, lote y notas. Una aplicación puede reabrirse tras confirmación; el plan permanece. Las aplicaciones independientes son editables y borrables. No se inventan reglas médicas nuevas ni fechas de campañas.
 
@@ -32,6 +32,6 @@ Calendario tiene agenda y mes, eventos derivados de pesos, vacunas con fecha y s
 
 ## Copias y PWA
 
-Exportación explícita de todas las tablas, incluyendo configuración, ubicaciones y cronómetros activos. Importación con comprobación de formato, versión, tipos, UUID, unicidad, relaciones y ausencia de huérfanos; resumen previo y confirmación fuerte. Sustitución en una sola transacción con rollback. Límite de 25 MiB para archivos de copia.
+Exportación explícita de todas las tablas, incluyendo medidas de crecimiento, configuración, ubicaciones y cronómetros activos. Importación con comprobación de formato, versión, tipos, UUID, unicidad, relaciones y ausencia de huérfanos; las copias v1 se convierten sin medidas nuevas. Resumen previo y confirmación fuerte. Sustitución en una sola transacción con rollback. Límite de 25 MiB para archivos de copia.
 
 Serwist precachea únicamente archivos compilados de esta versión. La primera carga e instalación de esos archivos requiere conexión. Una vez preparado, abrir, consultar, añadir, editar y borrar no requiere red. La actualización de la aplicación no borra la base familiar y la recarga para aplicar una versión nueva es explícita.

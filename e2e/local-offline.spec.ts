@@ -49,6 +49,15 @@ test("mobile flows persist through browser restart and entirely offline CRUD", a
   await page.getByRole("button", { name: "Ver gráfica de peso a pantalla completa" }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "Añadir medida", exact: true }).click();
+  const measurementDialog = page.getByRole("dialog");
+  await measurementDialog.getByLabel("Fecha", { exact: true }).fill("2024-04-01");
+  await measurementDialog.getByLabel("Centímetros", { exact: true }).fill("65");
+  await measurementDialog.getByRole("button", { name: "Guardar medida" }).click();
+  await expect(measurementDialog).toHaveCount(0);
+  await expect(page.getByText("65 cm", { exact: true })).toBeVisible();
+  await page.getByRole("combobox", { name: "Gráfica", exact: true }).selectOption("bmiForAge");
+  await expect(page.getByLabel("IMC para la edad", { exact: true })).toBeVisible();
   await visit("/sueno/");
   await page.getByRole("button", { name: "Iniciar siesta", exact: true }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Iniciar", exact: true }).click();
@@ -67,7 +76,7 @@ test("mobile flows persist through browser restart and entirely offline CRUD", a
   await expect(page.getByText("No hay pesos para mostrar aquí.")).toBeVisible();
   await addWeight(page, "7200");
   await expect(page.getByText("Referencia OMS: P3 P15 P50 P85 P97", { exact: true })).toHaveCount(
-    0,
+    1,
   );
   await context.close();
 
@@ -204,7 +213,7 @@ test("vaccines, travel, strong child deletion and local backup restoration", asy
   const download = await downloadPromise;
   const contents = await readFile((await download.path())!, "utf8");
   const backup = JSON.parse(contents) as PequesBackup;
-  expect(backup).toMatchObject({ format: "peques-backup", schemaVersion: 1 });
+  expect(backup).toMatchObject({ format: "peques-backup", schemaVersion: 2 });
   expect(backup.data.children).toHaveLength(1);
   expect(backup.data.weightEntries).toHaveLength(1);
   expect(backup.data.plannedVaccineDoses).toHaveLength(22);

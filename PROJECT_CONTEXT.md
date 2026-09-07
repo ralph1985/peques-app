@@ -6,7 +6,7 @@ Peques es una PWA mobile-first multihijo, derivada de los componentes visuales y
 
 - Privacidad, integridad e aislamiento por hijo tienen prioridad sobre nuevas funciones.
 - `out/` es el producto desplegable. Next se usa como compilador y router del frontend, no como backend familiar.
-- Dexie abre `peques-local`, versión 1, y es la única fuente de verdad. No hay sincronización ni persistencia remota.
+- Dexie abre `peques-local`, versión 2, y es la única fuente de verdad. No hay sincronización ni persistencia remota.
 - El punto de composición `create-peques-app.ts` conecta repositorios y suscripciones `liveQuery`. UI recibe operaciones y datos, no consultas Dexie.
 - El hijo activo se guarda en settings. Los componentes específicos se reinician al cambiarlo para no conservar formularios o datos del hijo anterior.
 - Crear hijo, planificación y selección es atómico. El borrado confirmado elimina sus cuatro colecciones y conserva Viaje.
@@ -16,7 +16,7 @@ Peques es una PWA mobile-first multihijo, derivada de los componentes visuales y
 - Calendario es una vista derivada, sin tabla de eventos ni feed externo.
 - Las copias son JSON versionado y restauración por sustitución transaccional. No se implementa mezcla entre dispositivos.
 - No hay PIN ni cifrado propio en esta versión. El almacenamiento local no implica protección frente a alguien con acceso al dispositivo.
-- Referencias OMS heredadas solo femeninas. Campañas de vacunas sin fecha concreta permanecen sin fecha hasta que la familia las confirme con su centro.
+- Las referencias OMS de crecimiento están embebidas localmente para niñas y niños. Peso-para-la-edad llega hasta 10 años; talla e IMC hasta 19; perímetro cefálico y peso-para-talla hasta 5. Campañas de vacunas sin fecha concreta permanecen sin fecha hasta que la familia las confirme con su centro.
 - Al editar el nacimiento se conservan citas y aplicaciones existentes y se pide revisar las fechas: no se sobreescribe información manual.
 
 ## Desarrollo
