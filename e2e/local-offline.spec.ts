@@ -327,3 +327,82 @@ test("installable manifest, standalone vaccine and offline sleep shortcut", asyn
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect(page.getByText("Nota ficticia independiente", { exact: true })).toHaveCount(0);
 });
+
+test("child editing, identified family calendar and keyboard checklist ordering", async ({
+  page,
+  context,
+}) => {
+  await page.goto("/");
+  await createChild(page, "Peque ficticio calendario A", "female");
+  await expect(page.getByText("Lista para abrir sin conexión", { exact: true })).toBeVisible();
+  await context.setOffline(true);
+  await page.goto("/ajustes/");
+  await page
+    .getByRole("button", { name: "Editar Peque ficticio calendario A", exact: true })
+    .click();
+  await page
+    .getByRole("dialog")
+    .getByLabel("Nombre", { exact: true })
+    .fill("Peque ficticio editado");
+  await page
+    .getByRole("dialog")
+    .getByLabel("Identificador sanitario · opcional")
+    .fill("ID-FICTICIO");
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Guardar cambios", exact: true })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Cambiar hijo: Peque ficticio editado", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await page.getByRole("button", { name: "Añadir hijo", exact: true }).click();
+  await createChild(page, "Peque ficticio calendario B", "male");
+  await page.goto("/calendario/");
+  await expect(
+    page
+      .locator("main")
+      .getByRole("button", { name: /Peque ficticio calendario B ·/ })
+      .first(),
+  ).toBeVisible();
+  await expect(
+    page.locator("main").getByRole("button", { name: /Peque ficticio editado ·/ }),
+  ).toHaveCount(0);
+  await page.getByLabel("Todos los hijos").click();
+  await expect(page.getByLabel("Todos los hijos")).toBeChecked();
+  const aEvent = page
+    .locator("main")
+    .getByRole("button", { name: /Peque ficticio editado ·/ })
+    .first();
+  await expect(aEvent).toBeVisible();
+  await aEvent.click();
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Ir al registro", exact: true })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Cambiar hijo: Peque ficticio editado", exact: true }),
+  ).toBeVisible();
+  await expect(page).toHaveURL(/\/vacunas\/$/);
+  await page.goto("/viaje/");
+  for (const label of ["Elemento ficticio A", "Elemento ficticio B"]) {
+    await page.getByRole("button", { name: "Añadir a la lista", exact: true }).click();
+    await page.getByRole("dialog").getByLabel("Elemento", { exact: true }).fill(label);
+    await page.getByRole("dialog").getByRole("button", { name: "Añadir elemento" }).click();
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+  }
+  const rows = page.locator("li[data-travel-item-id] strong");
+  await expect(rows).toHaveText(["Elemento ficticio A", "Elemento ficticio B"]);
+  await page.getByRole("button", { name: "Mover Elemento ficticio B", exact: true }).focus();
+  await page.keyboard.press("Space");
+  await page.keyboard.press("ArrowUp");
+  await page.keyboard.press("Space");
+  await expect(page.getByText("Orden guardado.", { exact: true })).toBeAttached();
+  await expect(rows).toHaveText(["Elemento ficticio B", "Elemento ficticio A"]);
+  await page.reload();
+  await expect(rows).toHaveText(["Elemento ficticio B", "Elemento ficticio A"]);
+  await page.getByRole("button", { name: "Dónde está", exact: true }).click();
+  await expect(rows).toHaveText(["Elemento ficticio A", "Elemento ficticio B"]);
+  await page.getByRole("button", { name: "Preparar", exact: true }).click();
+  await expect(rows).toHaveText(["Elemento ficticio B", "Elemento ficticio A"]);
+});

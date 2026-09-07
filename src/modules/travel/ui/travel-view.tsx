@@ -24,6 +24,13 @@ type ItemSheet =
   | null;
 type GroupItems = Record<string, string[]>;
 
+function compareStorageOrder(a: TravelChecklistItem, b: TravelChecklistItem): number {
+  return (
+    (a.storageSortOrder ?? Number.MAX_SAFE_INTEGER) -
+      (b.storageSortOrder ?? Number.MAX_SAFE_INTEGER) || a.id.localeCompare(b.id)
+  );
+}
+
 export function TravelView() {
   const { app, family } = usePeques();
   const state = useLocalData(app.watchTravel);
@@ -52,14 +59,12 @@ export function TravelView() {
             label: locationLabel(location, checklist.locations ?? []),
             items: items
               .filter((item) => item.storageLocationId === location.id)
-              .sort((a, b) => (a.storageSortOrder ?? 0) - (b.storageSortOrder ?? 0)),
+              .sort(compareStorageOrder),
           })),
           {
             id: "unassigned",
             label: "Sin ubicación",
-            items: items
-              .filter((item) => !item.storageLocationId)
-              .sort((a, b) => (a.storageSortOrder ?? 0) - (b.storageSortOrder ?? 0)),
+            items: items.filter((item) => !item.storageLocationId).sort(compareStorageOrder),
           },
         ];
   const currentGroups = dragGroups
@@ -276,7 +281,13 @@ export function TravelView() {
 }
 
 function DropZone({ id, children }: { id: string; children: ReactNode }) {
-  const { ref, isDropTarget } = useDroppable({ id, accept: "travel-item", type: "travel-group" });
+  const { ref, isDropTarget } = useDroppable({
+    id,
+    accept: "travel-item",
+    type: "travel-group",
+    // A containing list must not intercept the more specific item drop targets.
+    collisionPriority: -1,
+  });
   return (
     <ol ref={ref} className={styles.items} data-drop-target={isDropTarget}>
       {children}
@@ -306,6 +317,7 @@ function ItemRow({
     index,
     accept: "travel-item",
     type: "travel-item",
+    collisionPriority: 1,
     disabled,
   });
   return (
@@ -399,14 +411,12 @@ function ItemForm({
           storageSortOrder:
             item?.storageLocationId === storageLocationId
               ? (item.storageSortOrder ?? null)
-              : storageLocationId
-                ? Math.max(
-                    0,
-                    ...items
-                      .filter((row) => row.storageLocationId === storageLocationId)
-                      .map((row) => row.storageSortOrder ?? 0),
-                  ) + 10
-                : null,
+              : Math.max(
+                  0,
+                  ...items
+                    .filter((row) => (row.storageLocationId ?? null) === storageLocationId)
+                    .map((row) => row.storageSortOrder ?? 0),
+                ) + 10,
         };
         return item
           ? updateTravelChecklistItem(app.travel, item.id, input)
