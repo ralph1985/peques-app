@@ -19,6 +19,7 @@ export type AppSettings = {
   activeChildId: string | null;
   lastExportedAt: string | null;
   tutorialSeenRoutes: TutorialRoute[];
+  tutorialReplayRequested: boolean;
   travelView: "prepare" | "location";
   vaccineView: "status" | "timeline";
   calendarAllChildren: boolean;
@@ -29,6 +30,7 @@ export const defaultSettings: AppSettings = {
   activeChildId: null,
   lastExportedAt: null,
   tutorialSeenRoutes: [],
+  tutorialReplayRequested: false,
   travelView: "prepare",
   vaccineView: "status",
   calendarAllChildren: false,

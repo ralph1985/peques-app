@@ -1,12 +1,18 @@
 "use client";
 import { ChildManager } from "@/modules/profile/ui/child-manager";
 import { BackupPanel } from "@/modules/backup/ui/backup-panel";
+import { TutorialRestartButton } from "@/shared/ui/app-tutorial";
 export default function SettingsPage() {
   return (
-    <main className="content-page">
+    <main className="content-page" data-tutorial-section="settings">
       <h1>Ajustes</h1>
       <ChildManager />
       <BackupPanel />
+      <section className="local-panel">
+        <h2>Ayuda</h2>
+        <p>Repasa las funciones principales de Peques con una guía breve y contextual.</p>
+        <TutorialRestartButton />
+      </section>
       <section className="local-panel">
         <h2>Tu privacidad</h2>
         <p>

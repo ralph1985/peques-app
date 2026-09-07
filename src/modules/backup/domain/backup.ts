@@ -283,7 +283,7 @@ function parseSettings(value: unknown): AppSettings {
   const row = record(
     value,
     ["id", "activeChildId", "lastExportedAt", "travelView", "vaccineView", "calendarAllChildren"],
-    ["tutorialSeenRoutes"],
+    ["tutorialSeenRoutes", "tutorialReplayRequested"],
   );
   assert(row.id === "main", "Identificador de configuración no válido.");
   assert(
@@ -299,11 +299,14 @@ function parseSettings(value: unknown): AppSettings {
     Array.isArray(tutorialSeenRoutes) && tutorialSeenRoutes.every(isTutorialRoute),
     "Rutas del tutorial no válidas.",
   );
+  const tutorialReplayRequested = row.tutorialReplayRequested ?? false;
+  assert(typeof tutorialReplayRequested === "boolean", "Estado del tutorial no válido.");
   return {
     id: "main",
     activeChildId: nullableUuid(row.activeChildId),
     lastExportedAt: row.lastExportedAt === null ? null : timestamp(row.lastExportedAt),
     tutorialSeenRoutes: [...new Set(tutorialSeenRoutes)],
+    tutorialReplayRequested,
     travelView: row.travelView,
     vaccineView: row.vaccineView,
     calendarAllChildren: boolean(row.calendarAllChildren),

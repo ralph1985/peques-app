@@ -24,7 +24,11 @@ export function GrowthMeasurementPanel({
     entry?: GrowthMeasurement;
   } | null>(null);
   return (
-    <section className={styles.panel}>
+    <section
+      className={styles.panel}
+      data-tutorial-section="growth-measurements"
+      data-tutorial-target="growth-measurements"
+    >
       <div className={styles.sectionTitle}>
         <h2>Otras medidas</h2>
         <button className="text-button" onClick={() => setSheet({ mode: "add" })} type="button">

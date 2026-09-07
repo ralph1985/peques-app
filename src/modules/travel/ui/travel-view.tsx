@@ -130,7 +130,7 @@ export function TravelView() {
   }
   return (
     <>
-      <section className={styles.panel}>
+      <section className={styles.panel} data-tutorial-section="travel">
         <div className={styles.sectionTitle}>
           <h2>Preparado</h2>
           <span>
@@ -143,7 +143,12 @@ export function TravelView() {
           max={Math.max(1, checklist.progress.total)}
         />
         <div className={styles.actions}>
-          <div className={styles.modeSwitch} role="group" aria-label="Modo de organización">
+          <div
+            className={styles.modeSwitch}
+            data-tutorial-target="travel-mode"
+            role="group"
+            aria-label="Modo de organización"
+          >
             <button
               aria-pressed={view === "prepare"}
               onClick={() => void run(() => app.settings.update({ travelView: "prepare" }))}
@@ -160,6 +165,7 @@ export function TravelView() {
           <button
             className={styles.iconCommandButton}
             aria-label="Añadir a la lista"
+            data-tutorial-target="travel-add"
             onClick={() => setSheet({ mode: "create" })}
           >
             +
@@ -180,7 +186,7 @@ export function TravelView() {
           {saving ? "Guardando…" : announcement}
         </p>
       </section>
-      <section className={styles.panel} aria-busy={saving}>
+      <section className={styles.panel} data-tutorial-target="travel-list" aria-busy={saving}>
         <h2>Checklist</h2>
         <DragDropProvider
           key={view}

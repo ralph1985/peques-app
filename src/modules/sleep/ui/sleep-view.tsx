@@ -82,7 +82,11 @@ export function SleepView({
 
   return (
     <>
-      <section className={styles.panel} aria-labelledby="sleep-now-title">
+      <section
+        className={styles.panel}
+        data-tutorial-section="sleep"
+        aria-labelledby="sleep-now-title"
+      >
         <div className={styles.sectionTitle}>
           <h2 id="sleep-now-title">Ahora</h2>
           <span>{formatLongDate(now)}</span>
@@ -126,7 +130,7 @@ export function SleepView({
                   : "Aún no hay descansos anotados."}
               </span>
             </div>
-            <div className={styles.startButtons}>
+            <div className={styles.startButtons} data-tutorial-target="sleep-start">
               <button
                 className={styles.startButton}
                 onClick={() => setSheetState({ kind: "nap", mode: "start" })}
@@ -146,6 +150,7 @@ export function SleepView({
         )}
         <button
           className={styles.manualButton}
+          data-tutorial-target="sleep-manual"
           onClick={() => setSheetState({ mode: "manual" })}
           type="button"
         >
@@ -176,7 +181,11 @@ export function SleepView({
         </div>
       </section>
 
-      <section className={styles.panel} aria-labelledby="history-title">
+      <section
+        className={styles.panel}
+        data-tutorial-target="sleep-history"
+        aria-labelledby="history-title"
+      >
         <div className={styles.sectionTitle}>
           <h2 id="history-title">Historial</h2>
           <span>{completedEntries.length} registros</span>

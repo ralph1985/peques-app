@@ -33,7 +33,7 @@ export default function Home() {
     : [];
   const activeSleep = data?.sleeps.find((entry) => !entry.endedAt);
   return (
-    <main className={styles.main}>
+    <main className={styles.main} data-tutorial-section="home">
       <section className={styles.hero}>
         <p className={styles.kicker}>Su día a día</p>
         <h1>{child.name}</h1>
@@ -50,7 +50,11 @@ export default function Home() {
         <p role="status">Cargando resúmenes…</p>
       ) : (
         <>
-          <section className={styles.reviewSoon} data-kind={agenda.reviewPrompt?.kind ?? "calm"}>
+          <section
+            className={styles.reviewSoon}
+            data-kind={agenda.reviewPrompt?.kind ?? "calm"}
+            data-tutorial-target="home-summary"
+          >
             <div>
               <span>Para revisar</span>
               <h2>{agenda.reviewPrompt?.title ?? "Todo a mano"}</h2>
@@ -140,7 +144,11 @@ export default function Home() {
         </>
       )}
       <div className={styles.quickActions}>
-        <button className={styles.addButton} onClick={() => setSheet("add")}>
+        <button
+          className={styles.addButton}
+          data-tutorial-target="home-add"
+          onClick={() => setSheet("add")}
+        >
           <span aria-hidden="true">+</span> Añadir
         </button>
       </div>

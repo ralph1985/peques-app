@@ -52,6 +52,7 @@ export function PequesRoot({ children }: { children: ReactNode }) {
           <header className="child-header">
             <span className="kicker">Peques</span>
             <button
+              data-tutorial-target="home-child-selector"
               type="button"
               onClick={() => setSelector(true)}
               aria-label={`Cambiar hijo: ${family.activeChild?.name ?? "Seleccionar"}`}

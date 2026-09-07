@@ -58,8 +58,13 @@ export function VaccineView({ childId, data }: { childId: string; data: ChildDat
         }));
   return (
     <>
-      <section className={styles.panel}>
-        <div className="filter-row" role="group" aria-label="Vista de vacunas">
+      <section className={styles.panel} data-tutorial-section="vaccines">
+        <div
+          className="filter-row"
+          data-tutorial-target="vaccines-view"
+          role="group"
+          aria-label="Vista de vacunas"
+        >
           <button
             className="text-button"
             aria-pressed={view === "status"}
@@ -129,7 +134,7 @@ export function VaccineView({ childId, data }: { childId: string; data: ChildDat
                       {dose.application.notes ? ` · ${dose.application.notes}` : ""}
                     </p>
                   )}
-                  <div className={styles.doseActions}>
+                  <div className={styles.doseActions} data-tutorial-target="vaccines-mark-applied">
                     <button
                       className="text-button"
                       onClick={() =>
@@ -160,7 +165,11 @@ export function VaccineView({ childId, data }: { childId: string; data: ChildDat
         ))}
       </section>
       {error && <p role="alert">{error}</p>}
-      <section className={styles.panel} aria-label="Vacunas fuera de la planificación">
+      <section
+        className={styles.panel}
+        data-tutorial-target="vaccines-standalone"
+        aria-label="Vacunas fuera de la planificación"
+      >
         <h2>Otras vacunas aplicadas</h2>
         <p>Para registros que no corresponden a una dosis de la planificación.</p>
         <button className="text-button" onClick={() => setStandalone({})}>

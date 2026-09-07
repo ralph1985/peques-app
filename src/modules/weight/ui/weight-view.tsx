@@ -103,6 +103,7 @@ export function WeightCreateButton({
     <>
       <button
         className={compact ? "text-button" : styles.floatingAddButton}
+        data-tutorial-target="weight-add"
         onClick={() => setOpen(true)}
         aria-label="Añadir peso"
       >
@@ -141,7 +142,7 @@ export function WeightView({
   const visible = useMemo(() => filterWeightEntries(entries, filter), [entries, filter]);
   return (
     <>
-      <section className={styles.panel}>
+      <section className={styles.panel} data-tutorial-section="growth">
         <div className={styles.sectionTitle}>
           <h2>Evolución del peso</h2>
           <span>{visible.length} registros</span>
@@ -161,6 +162,7 @@ export function WeightView({
         <label className={styles.chartIndicatorSelect}>
           Gráfica
           <select
+            data-tutorial-target="growth-indicator"
             name="growth-indicator"
             value={indicator}
             onChange={(event) => setIndicator(event.target.value as GrowthIndicator)}

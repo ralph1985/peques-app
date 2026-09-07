@@ -74,7 +74,11 @@ export function BackupPanel() {
   }
   const counts = preview ? summarizeBackup(preview) : null;
   return (
-    <section className="local-panel" aria-labelledby="backup-title">
+    <section
+      className="local-panel"
+      data-tutorial-target="settings-backup"
+      aria-labelledby="backup-title"
+    >
       <h2 id="backup-title">Copias de seguridad</h2>
       <p>
         Los datos están solo en este dispositivo. Borrar los datos del navegador o perder el

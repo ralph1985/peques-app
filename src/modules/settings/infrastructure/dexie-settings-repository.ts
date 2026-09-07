@@ -8,7 +8,11 @@ export class DexieSettingsRepository implements SettingsRepository {
   async read() {
     const settings = await this.db.settings.get("main");
     assert(settings, "No se pudo leer la configuración local.");
-    return { ...settings, tutorialSeenRoutes: settings.tutorialSeenRoutes ?? [] };
+    return {
+      ...settings,
+      tutorialSeenRoutes: settings.tutorialSeenRoutes ?? [],
+      tutorialReplayRequested: settings.tutorialReplayRequested ?? false,
+    };
   }
   async update(input: Partial<SettingsInput>) {
     const patch: Partial<SettingsInput> = {};
@@ -30,6 +34,10 @@ export class DexieSettingsRepository implements SettingsRepository {
         "Rutas del tutorial no válidas.",
       );
       patch.tutorialSeenRoutes = [...new Set(input.tutorialSeenRoutes)];
+    }
+    if (input.tutorialReplayRequested !== undefined) {
+      assert(typeof input.tutorialReplayRequested === "boolean", "Estado del tutorial no válido.");
+      patch.tutorialReplayRequested = input.tutorialReplayRequested;
     }
     await this.db.transaction("rw", this.db.settings, async () => {
       await this.read();

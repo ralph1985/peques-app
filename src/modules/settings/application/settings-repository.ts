@@ -1,7 +1,11 @@
 import type { AppSettings } from "../domain/settings";
 export type SettingsInput = Pick<
   AppSettings,
-  "travelView" | "vaccineView" | "calendarAllChildren" | "tutorialSeenRoutes"
+  | "travelView"
+  | "vaccineView"
+  | "calendarAllChildren"
+  | "tutorialSeenRoutes"
+  | "tutorialReplayRequested"
 >;
 export interface SettingsRepository {
   read(): Promise<AppSettings>;

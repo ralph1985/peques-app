@@ -29,7 +29,11 @@ export function ChildManager() {
     }
   }
   return (
-    <section className="local-panel" aria-labelledby="children-title">
+    <section
+      className="local-panel"
+      data-tutorial-target="settings-children"
+      aria-labelledby="children-title"
+    >
       <div className="section-heading">
         <h2 id="children-title">Tus peques</h2>
         <button className={ui.secondary} onClick={() => setSheet({ mode: "create" })}>

@@ -47,7 +47,11 @@ test("mobile flows persist through browser restart and entirely offline CRUD", a
   await visit("/");
   await expect(page.getByRole("heading", { name: "Añade tu primer hijo" })).toBeVisible();
   await createChild(page, "Peque ficticio A", "female");
-  await expect(page.getByRole("dialog")).toContainText("Tu resumen diario");
+  const tutorial = page.getByRole("dialog");
+  await expect(tutorial).toContainText("Empieza por el peque seleccionado");
+  await tutorial.getByRole("button", { name: "Siguiente", exact: true }).click();
+  await expect(tutorial).toContainText("Tu resumen, de un vistazo");
+  await tutorial.getByRole("button", { name: "Atrás", exact: true }).click();
   await skipTutorial(page);
   await expect(
     page.getByRole("complementary", { name: "Recordatorio de copia de seguridad" }),
@@ -144,6 +148,13 @@ test("mobile flows persist through browser restart and entirely offline CRUD", a
   await context.setOffline(true);
   page = context.pages()[0];
   observe();
+  await visit("/");
+  await expect(page.getByRole("heading", { name: "Peque ficticio A", exact: true })).toBeVisible();
+  await visit("/ajustes/");
+  await page.getByRole("button", { name: "Ver tutorial de nuevo", exact: true }).click();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByRole("dialog")).toContainText("Empieza por el peque seleccionado");
+  await skipTutorial(page);
   await visit("/");
   await expect(page.getByRole("heading", { name: "Peque ficticio A", exact: true })).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("home-mobile-offline.png"), fullPage: true });

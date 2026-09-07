@@ -252,6 +252,7 @@ describe("integridad de los repositorios locales", () => {
       calendarAllChildren: true,
       travelView: "location",
       tutorialSeenRoutes: ["/", "/peso"],
+      tutorialReplayRequested: true,
     });
     await repo.recordExport("2024-04-01T00:00:00.000Z");
     db.close();
@@ -262,6 +263,7 @@ describe("integridad de los repositorios locales", () => {
       travelView: "location",
       lastExportedAt: "2024-04-01T00:00:00.000Z",
       tutorialSeenRoutes: ["/", "/peso"],
+      tutorialReplayRequested: true,
     });
     await expect(repo.recordExport("invalid")).rejects.toThrow();
   });

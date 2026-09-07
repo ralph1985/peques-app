@@ -33,9 +33,17 @@ export function CalendarView({ events, onOpen }: CalendarViewProps) {
 
   return (
     <>
-      <section className={styles.panel} aria-label="Eventos del calendario">
+      <section
+        className={styles.panel}
+        data-tutorial-section="calendar"
+        aria-label="Eventos del calendario"
+      >
         <div className={styles.toolbar}>
-          <div className={styles.segmentedControl} aria-label="Cambiar vista">
+          <div
+            className={styles.segmentedControl}
+            data-tutorial-target="calendar-view"
+            aria-label="Cambiar vista"
+          >
             <button
               aria-pressed={viewMode === "agenda"}
               className={viewMode === "agenda" ? styles.selected : undefined}
@@ -144,7 +152,7 @@ function Agenda({
   }, [events]);
 
   return (
-    <div className={styles.agenda}>
+    <div className={styles.agenda} data-tutorial-target="calendar-events">
       {groups.map(([date, dateEvents]) => (
         <section className={styles.day} key={date}>
           <h2>{formatCalendarDayHeading(date)}</h2>
@@ -203,7 +211,7 @@ function MonthCalendar({
 
   return (
     <div className={styles.monthView}>
-      <div className={styles.monthHeader}>
+      <div className={styles.monthHeader} data-tutorial-target="calendar-month">
         <button aria-label="Mes anterior" onClick={() => moveMonth(-1)} type="button">
           ‹
         </button>

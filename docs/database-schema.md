@@ -31,6 +31,6 @@ IndexedDB no garantiza claves foráneas: los adaptadores comprueban existencia y
 
 ## Configuración y privacidad
 
-`settings` contiene `activeChildId`, `lastExportedAt`, `tutorialSeenRoutes`, `travelView`, `vaccineView` y `calendarAllChildren`. `tutorialSeenRoutes` permite mostrar el tutorial una sola vez por pantalla. No contiene sesiones, colas ni estado remoto.
+`settings` contiene `activeChildId`, `lastExportedAt`, `tutorialSeenRoutes`, `tutorialReplayRequested`, `travelView`, `vaccineView` y `calendarAllChildren`. `tutorialSeenRoutes` permite mostrar el tutorial una sola vez por pantalla; `tutorialReplayRequested` coordina el recorrido completo relanzado desde Ajustes. No contiene sesiones, colas ni estado remoto.
 
 No se guardan datos familiares en Cache Storage ni en localStorage. La copia JSON exportada es una salida explícita que controla el usuario.

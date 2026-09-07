@@ -107,12 +107,14 @@ describe("copia completa y restauración atómica", () => {
     legacy.schemaVersion = 1;
     Reflect.deleteProperty(legacy.data, "growthMeasurements");
     Reflect.deleteProperty(legacy.data.settings[0], "tutorialSeenRoutes");
+    Reflect.deleteProperty(legacy.data.settings[0], "tutorialReplayRequested");
 
     const parsed = parseBackup(JSON.stringify(legacy));
 
     expect(parsed.schemaVersion).toBe(1);
     expect(parsed.data.growthMeasurements).toEqual([]);
     expect(parsed.data.settings[0].tutorialSeenRoutes).toEqual([]);
+    expect(parsed.data.settings[0].tutorialReplayRequested).toBe(false);
   });
   it("restores by replacement rather than merging records or generating extra vaccines", async () => {
     await new DexieChildRepository(db).create({
