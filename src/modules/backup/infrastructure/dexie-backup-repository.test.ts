@@ -37,6 +37,7 @@ describe("copia completa y restauración atómica", () => {
       kind: "night",
       startedAt: "2022-06-10T20:00:00.000Z",
       endedAt: null,
+      notes: "Se despertó una vez.",
     });
     const vaccines = new DexieVaccinePlanRepository(db, a.id);
     await vaccines.createAppliedVaccineDose({
@@ -117,6 +118,14 @@ describe("copia completa y restauración atómica", () => {
     expect(parsed.data.settings[0].firstUsedAt).toBe(backup.exportedAt);
     expect(parsed.data.settings[0].tutorialSeenRoutes).toEqual([]);
     expect(parsed.data.settings[0].tutorialReplayRequested).toBe(false);
+  });
+  it("accepts sleep records from backups created before notes existed", () => {
+    const legacy = structuredClone(backup);
+    Reflect.deleteProperty(legacy.data.sleepEntries[0], "notes");
+
+    const parsed = parseBackup(JSON.stringify(legacy));
+
+    expect(parsed.data.sleepEntries[0].notes).toBeNull();
   });
   it("restores by replacement rather than merging records or generating extra vaccines", async () => {
     await new DexieChildRepository(db).create({

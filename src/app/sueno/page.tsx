@@ -12,7 +12,12 @@ import { assert } from "@/shared/domain/validation";
 function input(data: FormData) {
   const kind = field(data, "kind");
   assert(isSleepKind(kind), "Tipo de sueño no válido.");
-  return { kind, startedAt: field(data, "startedAt"), endedAt: field(data, "endedAt") || null };
+  return {
+    kind,
+    startedAt: field(data, "startedAt"),
+    endedAt: field(data, "endedAt") || null,
+    notes: field(data, "notes"),
+  };
 }
 export default function SleepPage() {
   const { app } = usePeques();

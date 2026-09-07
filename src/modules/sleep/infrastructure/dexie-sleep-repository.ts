@@ -21,6 +21,7 @@ export class DexieSleepRepository implements SleepRepository {
             kind: active.kind,
             startedAt: active.startedAt,
             endedAt: now,
+            notes: active.notes ?? null,
           }),
         };
       return {

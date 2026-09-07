@@ -25,7 +25,7 @@ Crear un hijo genera su planificación vacunal y lo selecciona dentro de una tra
 
 ## Datos de seguimiento
 
-Todas las filas específicas incluyen `childId`. Peso conserva `measuredOn`, `weightGrams`, `place` y `notes`; la UI acepta kg y almacena gramos enteros. `growthMeasurements` conserva `measuredOn`, `kind` (`stature` o `headCircumference`), `position?` (`length` o `height`), `valueMillimeters` y `notes`. IMC y peso para longitud/estatura son valores derivados y no se persisten. Vacunas conserva nombres, dosis, fechas, lugar, lote y notas. `plannedDate` puede ser nulo para campañas que necesitan confirmar fecha; esas filas no aparecen como retrasadas. Sueño conserva `kind`, `startedAt`, `endedAt`, `createdAt` y `updatedAt`; fin nulo significa cronómetro activo.
+Todas las filas específicas incluyen `childId`. Peso conserva `measuredOn`, `weightGrams`, `place` y `notes`; la UI acepta kg y almacena gramos enteros. `growthMeasurements` conserva `measuredOn`, `kind` (`stature` o `headCircumference`), `position?` (`length` o `height`), `valueMillimeters` y `notes`. IMC y peso para longitud/estatura son valores derivados y no se persisten. Vacunas conserva nombres, dosis, fechas, lugar, lote y notas. `plannedDate` puede ser nulo para campañas que necesitan confirmar fecha; esas filas no aparecen como retrasadas. Sueño conserva `kind`, `startedAt`, `endedAt`, `notes?`, `createdAt` y `updatedAt`; fin nulo significa cronómetro activo y `notes` aporta contexto opcional del descanso.
 
 IndexedDB no garantiza claves foráneas: los adaptadores comprueban existencia y pertenencia dentro de cada transacción de escritura. Una aplicación vinculada debe pertenecer al mismo hijo que la dosis. Solo puede existir un sueño activo por hijo, también entre pestañas.
 

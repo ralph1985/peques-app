@@ -292,6 +292,14 @@
   font-size: 15px;
 }
 
+.entryNote {
+  color: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
 .entry[data-kind="night"] .entryTitle::before,
 .entry[data-kind="nap"] .entryTitle::before {
   display: inline-grid;
@@ -443,7 +451,8 @@
 }
 
 .sheetFields input,
-.sheetFields select {
+.sheetFields select,
+.sheetFields textarea {
   box-sizing: border-box;
   width: 100%;
   min-width: 0;
@@ -455,6 +464,12 @@
   color: #241335;
   font: inherit;
   padding: 0 12px;
+}
+
+.sheetFields textarea {
+  min-height: 82px;
+  resize: vertical;
+  padding-block: 10px;
 }
 
 .sheetFields input[type="date"],

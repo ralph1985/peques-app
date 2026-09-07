@@ -173,8 +173,10 @@ test("mobile flows persist through browser restart and entirely offline CRUD", a
   await expect(page.getByLabel("IMC para la edad", { exact: true })).toBeVisible();
   await visit("/sueno/");
   await page.getByRole("button", { name: "Iniciar siesta", exact: true }).click();
+  await page.getByRole("dialog").getByLabel("Notas (opcional)").fill("Se durmió tranquila.");
   await page.getByRole("dialog").getByRole("button", { name: "Iniciar", exact: true }).click();
   await expect(page.getByRole("heading", { name: /Durmiendo desde/ })).toBeVisible();
+  await expect(page.getByText("Se durmió tranquila.", { exact: true })).toBeVisible();
   await visit("/viaje/");
   await page.getByRole("button", { name: "Añadir a la lista", exact: true }).click();
   await page.getByRole("dialog").getByLabel("Elemento", { exact: true }).fill("Elemento ficticio");

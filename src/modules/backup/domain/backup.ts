@@ -249,21 +249,18 @@ function parseApplied(value: unknown): AppliedVaccineDose {
   };
 }
 function parseSleep(value: unknown): SleepEntry {
-  const row = record(value, [
-    "id",
-    "childId",
-    "kind",
-    "startedAt",
-    "endedAt",
-    "createdAt",
-    "updatedAt",
-  ]);
+  const row = record(
+    value,
+    ["id", "childId", "kind", "startedAt", "endedAt", "createdAt", "updatedAt"],
+    ["notes"],
+  );
   assert(typeof row.kind === "string" && isSleepKind(row.kind), "Tipo de sueño no válido.");
   return {
     ...createSleepEntry({
       kind: row.kind,
       startedAt: timestamp(row.startedAt),
       endedAt: row.endedAt === null ? null : timestamp(row.endedAt),
+      notes: nullableText(row.notes),
     }),
     ...owned(row),
     createdAt: timestamp(row.createdAt),

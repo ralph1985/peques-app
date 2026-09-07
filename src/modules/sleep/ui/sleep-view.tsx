@@ -97,6 +97,7 @@ export function SleepView({
             <div>
               <p>{activeEntry.kind === "nap" ? "Siesta en curso" : "Noche en curso"}</p>
               <h3>Durmiendo desde {formatTime(activeEntry.startedAt)}</h3>
+              {activeEntry.notes && <p className={styles.entryNote}>{activeEntry.notes}</p>}
             </div>
             <output aria-live="polite" className={styles.timer}>
               {formatLiveDuration(new Date(activeEntry.startedAt), now)}
@@ -210,6 +211,7 @@ export function SleepView({
                           {entry.endedAt ? formatTime(entry.endedAt) : "en curso"} ·{" "}
                           {formatDurationEntry(entry)}
                         </span>
+                        {entry.notes && <span className={styles.entryNote}>{entry.notes}</span>}
                       </div>
                       <div className={styles.entryActions}>
                         <button
@@ -497,6 +499,16 @@ function SleepFormSheet({
               </label>
             </>
           ) : null}
+          <label>
+            Notas (opcional)
+            <textarea
+              defaultValue={entry?.notes ?? ""}
+              disabled={isSubmitting}
+              maxLength={4000}
+              name="notes"
+              rows={3}
+            />
+          </label>
         </div>
         <div className={styles.sheetActions}>
           <button

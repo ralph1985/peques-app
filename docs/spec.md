@@ -24,7 +24,7 @@ Crecimiento mantiene el alta, edición, borrado e histórico del peso en kg, y a
 
 Vacunas conserva estados pendiente, próxima, retrasada y aplicada, vistas por estado/edad, edición de fecha y dosis, lugar, lote y notas. Una aplicación puede reabrirse tras confirmación; el plan permanece. Las aplicaciones independientes son editables y borrables. No se inventan reglas médicas nuevas ni fechas de campañas.
 
-Sueño conserva siestas/noches, registro manual, edición del inicio, fin y tipo, historial agrupado y resumen diario. Los cronómetros sobreviven a navegación y reinicio porque se guardan sus timestamps. El atajo es una operación local atómica sobre el hijo activo.
+Sueño conserva siestas/noches, registro manual, notas opcionales, edición del inicio, fin y tipo, historial agrupado y resumen diario. Las notas se muestran en el descanso activo y en el historial de Sueño, sin derivarse a Calendario ni Consulta. Los cronómetros sobreviven a navegación y reinicio porque se guardan sus timestamps. El atajo es una operación local atómica sobre el hijo activo.
 
 Viaje permite crear/editar/borrar categorías y ubicaciones jerárquicas, crear/editar/marcar/borrar elementos y reiniciar marcas. Los órdenes por preparación y ubicación son independientes. No se borran categorías ni ubicaciones todavía referenciadas. Las ubicaciones no pueden formar ciclos.
 

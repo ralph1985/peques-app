@@ -75,6 +75,25 @@ describe("integridad de los repositorios locales", () => {
     await expect(ra.toggleSleepEntry("nap", "2024-03-03T11:00:00.000Z")).rejects.toThrow();
     expect((await ra.getActiveSleepEntry())?.startedAt).toBe("2024-03-03T12:00:00.000Z");
   });
+  it("persists notes through edits and shortcut completion", async () => {
+    const repo = new DexieSleepRepository(db, a.id);
+    const started = await repo.createSleepEntry({
+      ...sleep,
+      notes: "Se durmió después de comer.",
+    });
+    const edited = await repo.updateSleepEntry(started.id, {
+      ...sleep,
+      notes: "Se durmió después de comer y descansó bien.",
+    });
+    expect(edited.notes).toBe("Se durmió después de comer y descansó bien.");
+
+    const stopped = await repo.toggleSleepEntry("night", "2024-03-02T13:00:00.000Z");
+    expect(stopped.entry).toMatchObject({
+      id: started.id,
+      endedAt: "2024-03-02T13:00:00.000Z",
+      notes: "Se durmió después de comer y descansó bien.",
+    });
+  });
   it("binds an applied vaccine to a plan belonging to the same child", async () => {
     const ra = new DexieVaccinePlanRepository(db, a.id);
     const rb = new DexieVaccinePlanRepository(db, b.id);

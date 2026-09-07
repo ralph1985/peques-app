@@ -1,4 +1,4 @@
-import { isDate } from "@/shared/domain/validation";
+import { isDate, optionalText } from "@/shared/domain/validation";
 
 export const sleepKinds = ["nap", "night"] as const;
 
@@ -10,6 +10,7 @@ export type SleepEntry = {
   kind: SleepKind;
   startedAt: string;
   endedAt: string | null;
+  notes?: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -33,6 +34,7 @@ export function createSleepEntry(input: NewSleepEntry): NewSleepEntry {
   return {
     endedAt: input.endedAt ? new Date(input.endedAt).toISOString() : null,
     kind: input.kind,
+    notes: optionalText(input.notes, "Notas"),
     startedAt: new Date(input.startedAt).toISOString(),
   };
 }
