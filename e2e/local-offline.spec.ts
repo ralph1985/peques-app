@@ -26,6 +26,12 @@ async function skipTutorial(page: Page) {
   await page.getByRole("button", { name: "Saltar tutorial", exact: true }).click();
 }
 
+async function waitForServiceWorker(page: Page) {
+  await expect
+    .poll(() => page.evaluate(() => navigator.serviceWorker?.controller !== null))
+    .toBe(true);
+}
+
 async function dismissTutorialIfPresent(page: Page) {
   const skipButton = page.getByRole("button", { name: "Saltar tutorial", exact: true });
   if (await skipButton.isVisible().catch(() => false)) {
@@ -143,10 +149,11 @@ test("mobile flows persist through browser restart and entirely offline CRUD", a
     "https://conquense.dev",
   );
   await expect(page.getByRole("img", { name: "Conquense.dev", exact: true })).toBeVisible();
+  await expect(page.getByText("Lista para abrir sin conexión", { exact: true })).toHaveCount(0);
+  await waitForServiceWorker(page);
   await expect(
     page.getByRole("complementary", { name: "Recordatorio de copia de seguridad" }),
   ).toHaveCount(0);
-  await expect(page.getByText("Lista para abrir sin conexión", { exact: true })).toBeVisible();
   await page.getByRole("navigation").getByRole("link", { name: "Peso", exact: true }).click();
   await addWeight(page, "6100");
   await expect(
@@ -340,7 +347,7 @@ test("vaccines, travel, strong child deletion and local backup restoration", asy
   await page.goto("/");
   await createChild(page, "Peque ficticio copia", "female");
   await skipTutorial(page);
-  await expect(page.getByText("Lista para abrir sin conexión", { exact: true })).toBeVisible();
+  await waitForServiceWorker(page);
   await context.setOffline(true);
   await page.goto("/vacunas/");
   await page.getByRole("button", { name: "Marcar aplicada", exact: true }).first().click();
@@ -460,7 +467,7 @@ test("installable manifest, standalone vaccine and offline sleep shortcut", asyn
   await page.goto("/");
   await createChild(page, "Peque ficticio atajo", "male");
   await skipTutorial(page);
-  await expect(page.getByText("Lista para abrir sin conexión", { exact: true })).toBeVisible();
+  await waitForServiceWorker(page);
   const cdp = await context.newCDPSession(page);
   const manifest = await cdp.send("Page.getAppManifest");
   expect(manifest.errors).toEqual([]);
@@ -520,7 +527,7 @@ test("child editing, identified family calendar and keyboard checklist ordering"
   await page.goto("/");
   await createChild(page, "Peque ficticio calendario A", "female");
   await skipTutorial(page);
-  await expect(page.getByText("Lista para abrir sin conexión", { exact: true })).toBeVisible();
+  await waitForServiceWorker(page);
   await context.setOffline(true);
   await page.goto("/ajustes/");
   await page

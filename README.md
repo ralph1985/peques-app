@@ -38,7 +38,7 @@ pnpm start
 
 Sirve `out/` desde la raíz de un dominio HTTPS. No requiere un servidor Next, secretos ni API. El servidor incluido es solo una herramienta local de archivos estáticos, enlazada a `127.0.0.1`.
 
-Abre la aplicación con conexión y espera a **Lista para abrir sin conexión**. Instálala desde la opción del navegador «Instalar aplicación» o «Añadir a pantalla de inicio» (en iOS, desde Compartir en Safari). Después puedes abrir las secciones, crear y modificar datos sin Internet. La instalación exacta depende del navegador; el modo de desarrollo no instala el service worker.
+Abre la aplicación con conexión y deja que termine la primera carga para que se registre el service worker. Instálala desde la opción del navegador «Instalar aplicación» o «Añadir a pantalla de inicio» (en iOS, desde Compartir en Safari). Después puedes abrir las secciones, crear y modificar datos sin Internet. La instalación exacta depende del navegador; el modo de desarrollo no instala el service worker.
 
 El build genera iconos a partir del SVG y Serwist cachea los archivos de la aplicación. Un paso posterior incorpora el HTML y los archivos RSC de la exportación actual. Cache Storage nunca recibe datos familiares. Las nuevas versiones requieren conexión para descargarse y ofrecen una recarga explícita, sin interrumpir formularios automáticamente.
 
