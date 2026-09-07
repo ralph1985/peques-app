@@ -4,6 +4,8 @@ import { motion, useReducedMotion, type Variants } from "motion/react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
+import { BackupReminder } from "@/modules/backup/ui/backup-reminder";
+import { AppTutorial } from "@/shared/ui/app-tutorial";
 import styles from "./app-shell.module.css";
 
 const tabs = [
@@ -93,6 +95,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className={styles.page}>
+      <BackupReminder />
       <div className={styles.view}>
         <motion.div
           animate="center"
@@ -138,6 +141,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         ))}
       </nav>
       <footer className={styles.credit}>Peques · Solo en tu dispositivo</footer>
+      <AppTutorial />
     </div>
   );
 }

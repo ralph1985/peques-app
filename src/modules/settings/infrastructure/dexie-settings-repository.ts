@@ -1,4 +1,5 @@
 import type { SettingsInput, SettingsRepository } from "../application/settings-repository";
+import { isTutorialRoute } from "../domain/settings";
 import type { PequesDatabase } from "@/shared/infrastructure/local/database";
 import { assert, isTimestamp } from "@/shared/domain/validation";
 
@@ -7,7 +8,7 @@ export class DexieSettingsRepository implements SettingsRepository {
   async read() {
     const settings = await this.db.settings.get("main");
     assert(settings, "No se pudo leer la configuración local.");
-    return settings;
+    return { ...settings, tutorialSeenRoutes: settings.tutorialSeenRoutes ?? [] };
   }
   async update(input: Partial<SettingsInput>) {
     const patch: Partial<SettingsInput> = {};
@@ -22,6 +23,13 @@ export class DexieSettingsRepository implements SettingsRepository {
     if (input.calendarAllChildren !== undefined) {
       assert(typeof input.calendarAllChildren === "boolean", "Vista de calendario no válida.");
       patch.calendarAllChildren = input.calendarAllChildren;
+    }
+    if (input.tutorialSeenRoutes !== undefined) {
+      assert(
+        Array.isArray(input.tutorialSeenRoutes) && input.tutorialSeenRoutes.every(isTutorialRoute),
+        "Rutas del tutorial no válidas.",
+      );
+      patch.tutorialSeenRoutes = [...new Set(input.tutorialSeenRoutes)];
     }
     await this.db.transaction("rw", this.db.settings, async () => {
       await this.read();

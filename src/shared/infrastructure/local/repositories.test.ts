@@ -248,7 +248,11 @@ describe("integridad de los repositorios locales", () => {
   });
   it("persists local preferences without allowing the selection invariant to be bypassed", async () => {
     const repo = new DexieSettingsRepository(db);
-    await repo.update({ calendarAllChildren: true, travelView: "location" });
+    await repo.update({
+      calendarAllChildren: true,
+      travelView: "location",
+      tutorialSeenRoutes: ["/", "/peso"],
+    });
     await repo.recordExport("2024-04-01T00:00:00.000Z");
     db.close();
     await db.open();
@@ -257,6 +261,7 @@ describe("integridad de los repositorios locales", () => {
       calendarAllChildren: true,
       travelView: "location",
       lastExportedAt: "2024-04-01T00:00:00.000Z",
+      tutorialSeenRoutes: ["/", "/peso"],
     });
     await expect(repo.recordExport("invalid")).rejects.toThrow();
   });

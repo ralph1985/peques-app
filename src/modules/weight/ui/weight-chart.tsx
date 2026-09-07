@@ -31,6 +31,7 @@ export function WeightChart({ birthDate, entries, sex }: WeightChartProps) {
   const closeExpandedChart = useCallback(() => {
     setIsExpanded(false);
   }, []);
+  const whoSexLabel = sex === "female" ? "niñas" : sex === "male" ? "niños" : null;
 
   useEffect(() => {
     if (!isExpanded) {
@@ -96,8 +97,8 @@ export function WeightChart({ birthDate, entries, sex }: WeightChartProps) {
     <div className={styles.chart}>
       <div className={styles.chartHeader}>
         <p>
-          {sex === "female" || sex === "male"
-            ? "Referencia OMS orientativa. No sustituye una revisión médica."
+          {whoSexLabel
+            ? `Referencia OMS para ${whoSexLabel}. No sustituye una revisión médica.`
             : "Evolución del peso. Referencias OMS no disponibles para este sexo."}
         </p>
         <div className={styles.chartHeaderActions}>
@@ -121,9 +122,10 @@ export function WeightChart({ birthDate, entries, sex }: WeightChartProps) {
         linePath={path}
         series={series}
         selectedPoint={selectedPoint}
+        whoSexLabel={whoSexLabel}
         onPointSelect={setSelectedPoint}
       />
-      {(sex === "female" || sex === "male") && <WeightChartLegend />}
+      {whoSexLabel && <WeightChartLegend sexLabel={whoSexLabel} />}
       <WeightChartMeta
         latestPoint={latestPoint}
         maxWeight={series.maxWeight}
@@ -150,7 +152,7 @@ export function WeightChart({ birthDate, entries, sex }: WeightChartProps) {
                 <p>Peso</p>
                 <h2 id="weight-chart-fullscreen-title">
                   {sex === "female" || sex === "male"
-                    ? "Evolución y referencia OMS"
+                    ? `Evolución y referencia OMS para ${whoSexLabel}`
                     : "Evolución del peso"}
                 </h2>
               </div>
@@ -173,10 +175,11 @@ export function WeightChart({ birthDate, entries, sex }: WeightChartProps) {
                 linePath={path}
                 series={series}
                 selectedPoint={selectedPoint}
+                whoSexLabel={whoSexLabel}
                 onPointSelect={setSelectedPoint}
               />
             </div>
-            {(sex === "female" || sex === "male") && <WeightChartLegend />}
+            {whoSexLabel && <WeightChartLegend sexLabel={whoSexLabel} />}
             <WeightChartMeta
               latestPoint={latestPoint}
               maxWeight={series.maxWeight}
@@ -252,6 +255,7 @@ type WeightChartSvgProps = {
   linePath: string;
   series: ReturnType<typeof buildWeightChartSeries>;
   selectedPoint: ChartTooltipPoint | null;
+  whoSexLabel: "niñas" | "niños" | null;
   onPointSelect: (point: ChartTooltipPoint | null) => void;
 };
 
@@ -285,6 +289,7 @@ function WeightChartSvg({
   linePath,
   series,
   selectedPoint,
+  whoSexLabel,
   onPointSelect,
 }: WeightChartSvgProps) {
   function handlePointerMove(event: PointerEvent<HTMLDivElement>) {
@@ -318,7 +323,8 @@ function WeightChartSvg({
         <desc id={`${idPrefix}-description`}>
           Peso entre {series.minWeight.toLocaleString("es-ES")} y{" "}
           {series.maxWeight.toLocaleString("es-ES")} gramos.
-          {series.referenceCurves.length > 0 && " Con referencia OMS de peso para la edad."}
+          {series.referenceCurves.length > 0 &&
+            ` Con referencia OMS de peso para la edad${whoSexLabel ? ` para ${whoSexLabel}` : ""}.`}
         </desc>
         {series.ticks.map((tick) => (
           <g className={styles.chartTick} key={tick.value}>
@@ -458,12 +464,12 @@ function formatGramsPerDay(value: number): string {
   return `${sign}${value.toLocaleString("es-ES", { maximumFractionDigits: 1 })}`;
 }
 
-function WeightChartLegend() {
+function WeightChartLegend({ sexLabel }: { sexLabel: "niñas" | "niños" }) {
   return (
     <div className={styles.chartLegend} aria-label="Leyenda de la gráfica">
       <span className={styles.chartLegendWeight}>Peso registrado</span>
       <span className={styles.chartLegendEstimate}>Estimación diaria · desliza por la gráfica</span>
-      <span>Referencia OMS: P3 P15 P50 P85 P97</span>
+      <span>Referencia OMS para {sexLabel}: P3 P15 P50 P85 P97</span>
     </div>
   );
 }

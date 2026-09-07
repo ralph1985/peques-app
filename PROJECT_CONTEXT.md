@@ -17,6 +17,7 @@ Peques es una PWA mobile-first multihijo, derivada de los componentes visuales y
 - Las copias son JSON versionado y restauración por sustitución transaccional. No se implementa mezcla entre dispositivos.
 - No hay PIN ni cifrado propio en esta versión. El almacenamiento local no implica protección frente a alguien con acceso al dispositivo.
 - Las referencias OMS de crecimiento están embebidas localmente para niñas y niños. Peso-para-la-edad llega hasta 10 años; talla e IMC hasta 19; perímetro cefálico y peso-para-talla hasta 5. Campañas de vacunas sin fecha concreta permanecen sin fecha hasta que la familia las confirme con su centro.
+- La app muestra explícitamente si una referencia OMS corresponde a niñas o niños. El recordatorio de copia avisa si nunca se ha exportado una copia o si han pasado más de 14 días. El tutorial inicial registra en settings las pantallas ya vistas y funciona sin red.
 - Al editar el nacimiento se conservan citas y aplicaciones existentes y se pide revisar las fechas: no se sobreescribe información manual.
 
 ## Desarrollo

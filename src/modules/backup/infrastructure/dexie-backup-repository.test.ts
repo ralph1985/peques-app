@@ -106,11 +106,13 @@ describe("copia completa y restauración atómica", () => {
     const legacy = structuredClone(backup);
     legacy.schemaVersion = 1;
     Reflect.deleteProperty(legacy.data, "growthMeasurements");
+    Reflect.deleteProperty(legacy.data.settings[0], "tutorialSeenRoutes");
 
     const parsed = parseBackup(JSON.stringify(legacy));
 
     expect(parsed.schemaVersion).toBe(1);
     expect(parsed.data.growthMeasurements).toEqual([]);
+    expect(parsed.data.settings[0].tutorialSeenRoutes).toEqual([]);
   });
   it("restores by replacement rather than merging records or generating extra vaccines", async () => {
     await new DexieChildRepository(db).create({

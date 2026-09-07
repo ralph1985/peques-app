@@ -38,13 +38,13 @@ export function GrowthChart({
   if (!series.points.length) {
     return <p className={styles.empty}>Registra los datos necesarios para mostrar esta gráfica.</p>;
   }
-  const reference = sex === "female" || sex === "male";
+  const whoSexLabel = sex === "female" ? "niñas" : sex === "male" ? "niños" : null;
   return (
     <div className={styles.chart}>
       <div className={styles.chartHeader}>
         <p>
-          {reference
-            ? "Referencia OMS orientativa. No sustituye una revisión médica."
+          {whoSexLabel
+            ? `Referencia OMS para ${whoSexLabel}. No sustituye una revisión médica.`
             : "Se muestran tus registros. Selecciona el sexo para añadir referencias OMS."}
         </p>
         <GrowthRangeToggle range={range} onRangeChange={setRange} />
@@ -52,7 +52,10 @@ export function GrowthChart({
       <div className={styles.chartCanvas} aria-label={labels[indicator]}>
         <svg viewBox={`0 0 ${series.width} ${series.height}`} role="img">
           <title>{labels[indicator]}</title>
-          <desc>Registros y referencias OMS de {labels[indicator].toLocaleLowerCase()}.</desc>
+          <desc>
+            Registros y referencias OMS de {labels[indicator].toLocaleLowerCase()}
+            {whoSexLabel ? ` para ${whoSexLabel}.` : "."}
+          </desc>
           {series.curves.map((curve) => (
             <g className={styles.chartReferenceGroup} key={curve.label}>
               <path
@@ -94,7 +97,7 @@ export function GrowthChart({
       </div>
       <div className={styles.chartLegend}>
         <span>{labels[indicator]}</span>
-        {reference && <span>Referencia OMS: P3 P15 P50 P85 P97</span>}
+        {whoSexLabel && <span>Referencia OMS para {whoSexLabel}: P3 P15 P50 P85 P97</span>}
       </div>
       <div className={styles.chartMeta}>
         <span>

@@ -21,6 +21,11 @@ async function addWeight(page: Page, grams: string) {
   await expect(dialog).toHaveCount(0);
 }
 
+async function skipTutorial(page: Page) {
+  await expect(page.getByRole("button", { name: "Saltar tutorial", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Saltar tutorial", exact: true }).click();
+}
+
 test("mobile flows persist through browser restart and entirely offline CRUD", async ({}, testInfo) => {
   const profile = testInfo.outputPath("synthetic-browser-profile");
   let context = await chromium.launchPersistentContext(profile, {
@@ -42,10 +47,17 @@ test("mobile flows persist through browser restart and entirely offline CRUD", a
   await visit("/");
   await expect(page.getByRole("heading", { name: "Añade tu primer hijo" })).toBeVisible();
   await createChild(page, "Peque ficticio A", "female");
+  await expect(page.getByRole("dialog")).toContainText("Tu resumen diario");
+  await skipTutorial(page);
+  await expect(
+    page.getByRole("complementary", { name: "Recordatorio de copia de seguridad" }),
+  ).toBeVisible();
   await expect(page.getByText("Lista para abrir sin conexión", { exact: true })).toBeVisible();
   await page.getByRole("navigation").getByRole("link", { name: "Peso", exact: true }).click();
   await addWeight(page, "6100");
-  await expect(page.getByText("Referencia OMS: P3 P15 P50 P85 P97", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("Referencia OMS para niñas: P3 P15 P50 P85 P97", { exact: true }),
+  ).toBeVisible();
   await page.getByRole("button", { name: "Ver gráfica de peso a pantalla completa" }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await page.keyboard.press("Escape");
@@ -75,9 +87,9 @@ test("mobile flows persist through browser restart and entirely offline CRUD", a
   await visit("/peso/");
   await expect(page.getByText("No hay pesos para mostrar aquí.")).toBeVisible();
   await addWeight(page, "7200");
-  await expect(page.getByText("Referencia OMS: P3 P15 P50 P85 P97", { exact: true })).toHaveCount(
-    1,
-  );
+  await expect(
+    page.getByText("Referencia OMS para niños: P3 P15 P50 P85 P97", { exact: true }),
+  ).toHaveCount(1);
   await context.close();
 
   context = await chromium.launchPersistentContext(profile, {
@@ -168,6 +180,7 @@ test("vaccines, travel, strong child deletion and local backup restoration", asy
 }) => {
   await page.goto("/");
   await createChild(page, "Peque ficticio copia", "female");
+  await skipTutorial(page);
   await expect(page.getByText("Lista para abrir sin conexión", { exact: true })).toBeVisible();
   await context.setOffline(true);
   await page.goto("/vacunas/");
@@ -219,6 +232,9 @@ test("vaccines, travel, strong child deletion and local backup restoration", asy
   expect(backup.data.plannedVaccineDoses).toHaveLength(22);
   expect(backup.data.appliedVaccineDoses).toHaveLength(1);
   expect(backup.data.travelChecklistItems).toHaveLength(1);
+  await expect(
+    page.getByRole("complementary", { name: "Recordatorio de copia de seguridad" }),
+  ).toHaveCount(0);
   const invalid = structuredClone(backup);
   invalid.data.weightEntries[0].childId = "00000000-0000-4000-8000-000000000001";
   await page.getByLabel("Importar copia").setInputFiles({
@@ -284,6 +300,7 @@ test("installable manifest, standalone vaccine and offline sleep shortcut", asyn
 }) => {
   await page.goto("/");
   await createChild(page, "Peque ficticio atajo", "male");
+  await skipTutorial(page);
   await expect(page.getByText("Lista para abrir sin conexión", { exact: true })).toBeVisible();
   const cdp = await context.newCDPSession(page);
   const manifest = await cdp.send("Page.getAppManifest");
@@ -343,6 +360,7 @@ test("child editing, identified family calendar and keyboard checklist ordering"
 }) => {
   await page.goto("/");
   await createChild(page, "Peque ficticio calendario A", "female");
+  await skipTutorial(page);
   await expect(page.getByText("Lista para abrir sin conexión", { exact: true })).toBeVisible();
   await context.setOffline(true);
   await page.goto("/ajustes/");

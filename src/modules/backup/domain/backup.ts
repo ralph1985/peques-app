@@ -21,7 +21,7 @@ import type {
   TravelChecklistItem,
   TravelStorageLocation,
 } from "@/modules/travel/domain/travel-checklist-item";
-import type { AppSettings } from "@/modules/settings/domain/settings";
+import { isTutorialRoute, type AppSettings } from "@/modules/settings/domain/settings";
 import {
   assert,
   isDate,
@@ -280,14 +280,11 @@ function parseItem(value: unknown): TravelChecklistItem {
   };
 }
 function parseSettings(value: unknown): AppSettings {
-  const row = record(value, [
-    "id",
-    "activeChildId",
-    "lastExportedAt",
-    "travelView",
-    "vaccineView",
-    "calendarAllChildren",
-  ]);
+  const row = record(
+    value,
+    ["id", "activeChildId", "lastExportedAt", "travelView", "vaccineView", "calendarAllChildren"],
+    ["tutorialSeenRoutes"],
+  );
   assert(row.id === "main", "Identificador de configuración no válido.");
   assert(
     row.travelView === "prepare" || row.travelView === "location",
@@ -297,10 +294,16 @@ function parseSettings(value: unknown): AppSettings {
     row.vaccineView === "status" || row.vaccineView === "timeline",
     "Vista de vacunas no válida.",
   );
+  const tutorialSeenRoutes = row.tutorialSeenRoutes ?? [];
+  assert(
+    Array.isArray(tutorialSeenRoutes) && tutorialSeenRoutes.every(isTutorialRoute),
+    "Rutas del tutorial no válidas.",
+  );
   return {
     id: "main",
     activeChildId: nullableUuid(row.activeChildId),
     lastExportedAt: row.lastExportedAt === null ? null : timestamp(row.lastExportedAt),
+    tutorialSeenRoutes: [...new Set(tutorialSeenRoutes)],
     travelView: row.travelView,
     vaccineView: row.vaccineView,
     calendarAllChildren: boolean(row.calendarAllChildren),
