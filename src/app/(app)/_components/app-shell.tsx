@@ -4,7 +4,7 @@ import { motion, useReducedMotion, type Variants } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { BackupReminder } from "@/modules/backup/ui/backup-reminder";
 import { AppTutorial } from "@/shared/ui/app-tutorial";
 import styles from "./app-shell.module.css";
@@ -14,6 +14,7 @@ const tabs = [
   { href: "/peso", icon: "weight", label: "Peso" },
   { href: "/vacunas", icon: "vaccine", label: "Vacunas" },
   { href: "/sueno", icon: "sleep", label: "Sueño" },
+  { href: "/viaje", icon: "bag", label: "Viaje" },
   { href: "/consulta", icon: "clipboard", label: "Consulta" },
   { href: "/calendario", icon: "calendar", label: "Calendario" },
   { href: "/ajustes", icon: "settings", label: "Ajustes" },
@@ -63,6 +64,8 @@ export function AppShell({ children }: { children: ReactNode }) {
     direction: "none",
     pathname,
   }));
+  const navScrollerRef = useRef<HTMLDivElement>(null);
+  const [hasMoreNavigation, setHasMoreNavigation] = useState(false);
   const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
@@ -72,6 +75,35 @@ export function AppShell({ children }: { children: ReactNode }) {
       }
     }
   }, [pathname, router]);
+
+  useEffect(() => {
+    const scroller = navScrollerRef.current;
+    if (!scroller) return;
+
+    const activeLink = scroller.querySelector<HTMLElement>('[aria-current="page"]');
+    activeLink?.scrollIntoView({
+      behavior: shouldReduceMotion ? "auto" : "smooth",
+      block: "nearest",
+      inline: "nearest",
+    });
+
+    const updateNavigationHint = () => {
+      setHasMoreNavigation(
+        scroller.scrollWidth > scroller.clientWidth &&
+          scroller.scrollLeft + scroller.clientWidth < scroller.scrollWidth - 1,
+      );
+    };
+
+    updateNavigationHint();
+    scroller.addEventListener("scroll", updateNavigationHint, { passive: true });
+    const resizeObserver = new ResizeObserver(updateNavigationHint);
+    resizeObserver.observe(scroller);
+
+    return () => {
+      scroller.removeEventListener("scroll", updateNavigationHint);
+      resizeObserver.disconnect();
+    };
+  }, [pathname, shouldReduceMotion]);
 
   let currentNavigationState = navigationState;
   let currentOptimisticNavigationState = optimisticNavigationState;
@@ -118,35 +150,48 @@ export function AppShell({ children }: { children: ReactNode }) {
         </motion.div>
       </div>
 
-      <nav className={styles.nav} aria-label="Navegacion principal">
-        {tabs.map((tab) => (
-          <Link
-            aria-current={
-              currentOptimisticNavigationState.pathname === tab.href ? "page" : undefined
-            }
-            aria-label={tab.label}
-            href={tab.href}
-            key={tab.href}
-            onFocus={() => {
-              if (tab.href !== pathname) {
-                router.prefetch(tab.href);
+      <nav
+        aria-label="Navegacion principal. Desliza horizontalmente para ver todas las secciones."
+        className={styles.nav}
+      >
+        <div className={styles.navScroller} data-horizontal-scroll="true" ref={navScrollerRef}>
+          {tabs.map((tab) => (
+            <Link
+              aria-current={
+                currentOptimisticNavigationState.pathname === tab.href ? "page" : undefined
               }
-            }}
-            onPointerDown={() => {
-              if (tab.href !== pathname) {
-                setOptimisticNavigationState({
-                  basePathname: pathname,
-                  pathname: tab.href,
-                });
-                router.prefetch(tab.href);
-              }
-            }}
-            title={tab.label}
-          >
-            <TabIcon name={tab.icon} />
-            <span className={styles.navLabel}>{tab.label}</span>
-          </Link>
-        ))}
+              aria-label={tab.label}
+              href={tab.href}
+              key={tab.href}
+              onFocus={() => {
+                if (tab.href !== pathname) {
+                  router.prefetch(tab.href);
+                }
+              }}
+              onPointerDown={() => {
+                if (tab.href !== pathname) {
+                  setOptimisticNavigationState({
+                    basePathname: pathname,
+                    pathname: tab.href,
+                  });
+                  router.prefetch(tab.href);
+                }
+              }}
+              title={tab.label}
+            >
+              <TabIcon name={tab.icon} />
+              <span className={styles.navLabel}>{tab.label}</span>
+            </Link>
+          ))}
+        </div>
+        {hasMoreNavigation ? (
+          <span aria-hidden="true" className={styles.navHint}>
+            Desliza
+            <svg className={styles.navHintIcon} viewBox="0 0 24 24">
+              <path d="m9 5 7 7-7 7" />
+            </svg>
+          </span>
+        ) : null}
       </nav>
       <footer className={styles.credit}>
         <a
@@ -228,6 +273,14 @@ function TabIcon({ name }: { name: TabIcon }) {
         <svg aria-hidden="true" className={styles.navIcon} viewBox="0 0 24 24">
           <path d="M20 15.2A8.5 8.5 0 0 1 8.8 4 8.5 8.5 0 1 0 20 15.2Z" />
           <path d="M16.5 5.5h.01M19 8h.01" />
+        </svg>
+      );
+    case "bag":
+      return (
+        <svg aria-hidden="true" className={styles.navIcon} viewBox="0 0 24 24">
+          <path d="M6.5 8.5h11L19 20H5L6.5 8.5Z" />
+          <path d="M9 8.5a3 3 0 0 1 6 0" />
+          <path d="m9.5 14 1.8 1.8 3.7-4" />
         </svg>
       );
     case "clipboard":

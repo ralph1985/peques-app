@@ -52,6 +52,7 @@ async function expectNoVisibleHorizontalOverflow(page: Page) {
           rect.width > 0 &&
           rect.height > 0 &&
           !element.closest(".chartRangeToggle") &&
+          !element.closest("[data-horizontal-scroll]") &&
           (rect.left < -1 || rect.right > viewportWidth + 1)
         );
       })
@@ -150,6 +151,12 @@ test("mobile flows persist through browser restart and entirely offline CRUD", a
   );
   await expect(page.getByRole("img", { name: "Conquense.dev", exact: true })).toBeVisible();
   await expect(page.getByText("Lista para abrir sin conexión", { exact: true })).toHaveCount(0);
+  const navigation = page.getByRole("navigation");
+  const navigationScroller = navigation.locator("[data-horizontal-scroll]");
+  await expect(navigation.getByRole("link", { name: "Viaje", exact: true })).toHaveCount(1);
+  expect(
+    await navigationScroller.evaluate((element) => element.scrollWidth > element.clientWidth),
+  ).toBe(true);
   await waitForServiceWorker(page);
   await expect(
     page.getByRole("complementary", { name: "Recordatorio de copia de seguridad" }),
