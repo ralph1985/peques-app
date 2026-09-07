@@ -18,8 +18,10 @@
 .fields input,
 .fields select,
 .fields textarea {
+  box-sizing: border-box;
   width: 100%;
   min-width: 0;
+  max-width: 100%;
   min-height: 46px;
   border: 1px solid #d9c8e9;
   border-radius: 12px;
@@ -27,6 +29,15 @@
   color: #241335;
   background: white;
   font-size: 16px;
+}
+.fields input[type="date"],
+.fields input[type="time"] {
+  display: block;
+  inline-size: 100%;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  margin: 0;
+  padding-inline: 8px;
 }
 .fields input[type="checkbox"] {
   width: 22px;

@@ -70,6 +70,47 @@ async function expectNoVisibleHorizontalOverflow(page: Page) {
   });
 }
 
+async function expectVisibleDateTimeControlsFit(page: Page) {
+  const offenders = await page.evaluate(() => {
+    const viewportWidth = window.innerWidth;
+    return [
+      ...document.querySelectorAll<HTMLInputElement>('input[type="date"], input[type="time"]'),
+    ]
+      .filter((element) => {
+        const style = window.getComputedStyle(element);
+        const rect = element.getBoundingClientRect();
+        return (
+          style.display !== "none" &&
+          style.visibility !== "hidden" &&
+          rect.width > 0 &&
+          rect.height > 0
+        );
+      })
+      .map((element) => {
+        const rect = element.getBoundingClientRect();
+        const container = element.closest("label") ?? element.parentElement;
+        const containerRect = container?.getBoundingClientRect();
+        return {
+          name: element.getAttribute("name"),
+          type: element.type,
+          left: Math.round(rect.left),
+          right: Math.round(rect.right),
+          containerLeft: containerRect ? Math.round(containerRect.left) : null,
+          containerRight: containerRect ? Math.round(containerRect.right) : null,
+          viewportWidth,
+        };
+      })
+      .filter(
+        ({ left, right, containerLeft, containerRight }) =>
+          left < -1 ||
+          right > viewportWidth + 1 ||
+          (containerLeft !== null && left < containerLeft - 1) ||
+          (containerRight !== null && right > containerRight + 1),
+      );
+  });
+  expect(offenders, JSON.stringify(offenders, null, 2)).toEqual([]);
+}
+
 test("mobile flows persist through browser restart and entirely offline CRUD", async ({}, testInfo) => {
   const profile = testInfo.outputPath("synthetic-browser-profile");
   let context = await chromium.launchPersistentContext(profile, {
@@ -261,6 +302,31 @@ test("long text stays inside narrow responsive layouts", async ({ page }) => {
     ]) {
       await page.goto(route);
       await dismissTutorialIfPresent(page);
+      if (route === "/peso/") {
+        await page.getByRole("button", { name: "Añadir peso", exact: true }).click();
+        await expectVisibleDateTimeControlsFit(page);
+        await page.keyboard.press("Escape");
+        await page.getByRole("button", { name: "Añadir medida", exact: true }).click();
+        await expectVisibleDateTimeControlsFit(page);
+        await page.keyboard.press("Escape");
+      }
+      if (route === "/vacunas/") {
+        await page.getByRole("button", { name: "Marcar aplicada", exact: true }).first().click();
+        await expectVisibleDateTimeControlsFit(page);
+        await page.keyboard.press("Escape");
+      }
+      if (route === "/sueno/") {
+        await page
+          .getByRole("button", { name: "Añadir descanso manualmente", exact: true })
+          .click();
+        await expectVisibleDateTimeControlsFit(page);
+        await page.keyboard.press("Escape");
+      }
+      if (route === "/ajustes/") {
+        await page.getByRole("button", { name: `Editar ${longName}`, exact: true }).click();
+        await expectVisibleDateTimeControlsFit(page);
+        await page.keyboard.press("Escape");
+      }
       await expectNoVisibleHorizontalOverflow(page);
     }
   }

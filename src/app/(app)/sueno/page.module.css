@@ -436,7 +436,7 @@
   gap: 7px;
   min-width: 0;
   max-width: 100%;
-  overflow: hidden;
+  overflow-wrap: anywhere;
   color: #5b426f;
   font-size: 14px;
   font-weight: 700;
@@ -460,15 +460,14 @@
 .sheetFields input[type="date"],
 .sheetFields input[type="time"] {
   display: block;
+  box-sizing: border-box;
   inline-size: 100%;
+  min-inline-size: 0;
   max-inline-size: 100%;
-  overflow: hidden;
   font-size: 16px;
-  line-height: 44px;
+  line-height: normal;
   margin: 0;
   padding-inline: 8px;
-  text-overflow: clip;
-  white-space: nowrap;
 }
 
 .sheetActions {
