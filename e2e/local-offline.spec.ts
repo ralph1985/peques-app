@@ -395,7 +395,9 @@ test("child editing, identified family calendar and keyboard checklist ordering"
   await expect(rows).toHaveText(["Elemento ficticio A", "Elemento ficticio B"]);
   await page.getByRole("button", { name: "Mover Elemento ficticio B", exact: true }).focus();
   await page.keyboard.press("Space");
+  await expect(page.locator('li[data-dragging="true"]').first()).toBeVisible();
   await page.keyboard.press("ArrowUp");
+  await expect(rows.first()).toHaveText("Elemento ficticio B");
   await page.keyboard.press("Space");
   await expect(page.getByText("Orden guardado.", { exact: true })).toBeAttached();
   await expect(rows).toHaveText(["Elemento ficticio B", "Elemento ficticio A"]);

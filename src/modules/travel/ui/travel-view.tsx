@@ -94,12 +94,12 @@ export function TravelView() {
   function dragOver(
     event: Parameters<NonNullable<ComponentProps<typeof DragDropProvider>["onDragOver"]>>[0],
   ) {
-    setDragGroups((current) => {
-      if (!current) return current;
-      const next = move(current, event);
-      dragRef.current = next;
-      return next;
-    });
+    const current = dragRef.current;
+    if (!current) return;
+    const next = move(current, event);
+    // Keep the drop snapshot synchronous, even when React batches the preview render.
+    dragRef.current = next;
+    setDragGroups(next);
   }
   function endDrag(
     event: Parameters<NonNullable<ComponentProps<typeof DragDropProvider>["onDragEnd"]>>[0],
