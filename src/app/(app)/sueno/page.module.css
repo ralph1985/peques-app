@@ -469,6 +469,18 @@
   margin: 0;
   padding-inline: 8px;
 }
+.sheetFields input[type="date"]::-webkit-date-and-time-value,
+.sheetFields input[type="time"]::-webkit-date-and-time-value {
+  min-width: 0;
+  text-align: start;
+}
+@supports (-webkit-touch-callout: none) {
+  .sheetFields input[type="date"],
+  .sheetFields input[type="time"] {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+}
 
 .sheetActions {
   display: grid;
