@@ -53,6 +53,10 @@ test("mobile flows persist through browser restart and entirely offline CRUD", a
   await expect(tutorial).toContainText("Tu resumen, de un vistazo");
   await tutorial.getByRole("button", { name: "Atrás", exact: true }).click();
   await skipTutorial(page);
+  await expect(page.getByRole("link", { name: "Conquense.dev", exact: true })).toHaveAttribute(
+    "href",
+    "https://conquense.dev",
+  );
   await expect(
     page.getByRole("complementary", { name: "Recordatorio de copia de seguridad" }),
   ).toBeVisible();

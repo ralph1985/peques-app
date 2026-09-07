@@ -140,7 +140,12 @@ export function AppShell({ children }: { children: ReactNode }) {
           </Link>
         ))}
       </nav>
-      <footer className={styles.credit}>Peques · Solo en tu dispositivo</footer>
+      <footer className={styles.credit}>
+        Peques · Solo en tu dispositivo · Hecha por{" "}
+        <a href="https://conquense.dev" rel="noreferrer" target="_blank">
+          Conquense.dev
+        </a>
+      </footer>
       <AppTutorial />
     </div>
   );
