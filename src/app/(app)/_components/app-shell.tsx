@@ -14,7 +14,7 @@ const tabs = [
   { href: "/peso", icon: "weight", label: "Peso" },
   { href: "/vacunas", icon: "vaccine", label: "Vacunas" },
   { href: "/sueno", icon: "sleep", label: "Sueño" },
-  { href: "/viaje", icon: "bag", label: "Viaje" },
+  { href: "/consulta", icon: "clipboard", label: "Consulta" },
   { href: "/calendario", icon: "calendar", label: "Calendario" },
   { href: "/ajustes", icon: "settings", label: "Ajustes" },
 ] as const;
@@ -97,6 +97,13 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className={styles.page}>
       <BackupReminder />
+      <aside className={styles.safetyNotice} aria-label="Límite de seguridad">
+        <strong>Peques no es para urgencias</strong>
+        <span>
+          No diagnostica ni calcula tratamientos. Si hay una emergencia, llama al{" "}
+          <a href="tel:112">112</a>.
+        </span>
+      </aside>
       <div className={styles.view}>
         <motion.div
           animate="center"
@@ -223,12 +230,11 @@ function TabIcon({ name }: { name: TabIcon }) {
           <path d="M16.5 5.5h.01M19 8h.01" />
         </svg>
       );
-    case "bag":
+    case "clipboard":
       return (
         <svg aria-hidden="true" className={styles.navIcon} viewBox="0 0 24 24">
-          <path d="M6.5 8.5h11L19 20H5L6.5 8.5Z" />
-          <path d="M9 8.5a3 3 0 0 1 6 0" />
-          <path d="m9.5 14 1.8 1.8 3.7-4" />
+          <rect height="16" rx="2" width="14" x="5" y="5" />
+          <path d="M9 5.5V4h6v1.5M8 10h8M8 14h6" />
         </svg>
       );
     case "settings":

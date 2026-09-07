@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { calculateAge, formatAge, formatBirthDate } from "./baby-profile";
+import { calculateAge, formatAge, formatBirthDate, growthReferenceBirthDate } from "./baby-profile";
 
 it("uses Madrid wall time and the optional birth hour", () => {
   const profile = { name: "Peque ficticio", birthDate: "2024-01-01", birthTime: "12:00" };
@@ -24,6 +24,19 @@ it("uses Madrid wall time and the optional birth hour", () => {
     minutes: 0,
     seconds: 0,
   });
+});
+
+it("calculates a corrected growth reference date for preterm children", () => {
+  expect(
+    growthReferenceBirthDate({
+      birthDate: "2024-01-01",
+      gestationalAgeWeeks: 32,
+      gestationalAgeDays: 0,
+    }),
+  ).toBe("2024-02-26");
+  expect(growthReferenceBirthDate({ birthDate: "2024-01-01", gestationalAgeWeeks: 39 })).toBe(
+    "2024-01-01",
+  );
 });
 
 it("does not display invented precision when the birth hour is unknown", () => {

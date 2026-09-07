@@ -13,9 +13,11 @@ import styles from "@/app/(app)/peso/page.module.css";
 
 export function GrowthMeasurementPanel({
   childId,
+  birthDate,
   measurements,
 }: {
   childId: string;
+  birthDate: string;
   measurements: GrowthMeasurement[];
 }) {
   const { app } = usePeques();
@@ -47,8 +49,7 @@ export function GrowthMeasurementPanel({
                   <div>
                     <strong>{formatMeasurement(entry)}</strong>
                     <span>
-                      {entry.kind === "stature" ? "Longitud / estatura" : "Perímetro cefálico"} ·{" "}
-                      {entry.measuredOn}
+                      {formatMeasurementKind(entry)} · {entry.measuredOn}
                     </span>
                     {entry.notes && <span>{entry.notes}</span>}
                   </div>
@@ -107,6 +108,7 @@ export function GrowthMeasurementPanel({
             ) : (
               <GrowthMeasurementForm
                 childId={childId}
+                birthDate={birthDate}
                 entry={sheet.entry}
                 onDone={() => setSheet(null)}
               />
@@ -120,10 +122,12 @@ export function GrowthMeasurementPanel({
 
 function GrowthMeasurementForm({
   childId,
+  birthDate,
   entry,
   onDone,
 }: {
   childId: string;
+  birthDate: string;
   entry?: GrowthMeasurement;
   onDone: () => void;
 }) {
@@ -136,10 +140,15 @@ function GrowthMeasurementForm({
       action={(data) => {
         const kind = field(data, "kind");
         assert(kind === "stature" || kind === "headCircumference", "Tipo de medida no válido.");
+        const position = field(data, "position");
+        assert(position === "length" || position === "height", "Forma de medir no válida.");
         const input = {
           measuredOn: field(data, "measuredOn"),
           kind,
-          valueMillimeters: Math.round(Number(field(data, "valueCentimeters")) * 10),
+          position: kind === "stature" ? position : undefined,
+          valueMillimeters: Math.round(
+            Number(field(data, "valueCentimeters").replace(",", ".")) * 10,
+          ),
           notes: field(data, "notes"),
         } as const;
         return entry
@@ -153,6 +162,7 @@ function GrowthMeasurementForm({
           name="measuredOn"
           type="date"
           required
+          min={birthDate}
           defaultValue={entry?.measuredOn ?? localDate()}
         />
       </label>
@@ -161,6 +171,13 @@ function GrowthMeasurementForm({
         <select name="kind" defaultValue={entry?.kind ?? "stature"}>
           <option value="stature">Longitud / estatura</option>
           <option value="headCircumference">Perímetro cefálico</option>
+        </select>
+      </label>
+      <label>
+        Forma de medir
+        <select name="position" defaultValue={entry?.position ?? "length"}>
+          <option value="length">Longitud tumbado</option>
+          <option value="height">Estatura de pie</option>
         </select>
       </label>
       <label>
@@ -190,4 +207,9 @@ function formatMeasurement(entry: GrowthMeasurement) {
 
 export function measurementKindLabel(kind: GrowthMeasurementKind) {
   return kind === "stature" ? "Longitud / estatura" : "Perímetro cefálico";
+}
+
+function formatMeasurementKind(entry: GrowthMeasurement) {
+  if (entry.kind === "headCircumference") return "Perímetro cefálico";
+  return entry.position === "height" ? "Estatura de pie" : "Longitud tumbado";
 }

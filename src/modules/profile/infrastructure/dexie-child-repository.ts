@@ -1,6 +1,10 @@
 import type { ChildRepository } from "../application/child-repository";
 import { validateChild, type ChildInput } from "../domain/child";
-import { buildMadridInitialVaccinePlan } from "@/modules/vaccines/domain/vaccine-calendar";
+import {
+  buildInitialVaccinePlan,
+  type NewPlannedVaccineDose,
+} from "@/modules/vaccines/domain/vaccine-calendar";
+import { healthRegions, type HealthRegion } from "@/modules/settings/domain/settings";
 import { assert } from "@/shared/domain/validation";
 import type { PequesDatabase } from "@/shared/infrastructure/local/database";
 import { requireChild } from "@/shared/infrastructure/local/ownership";
@@ -14,11 +18,14 @@ export class DexieChildRepository implements ChildRepository {
     const value = validateChild(input);
     const now = new Date().toISOString();
     const child = { ...value, id: crypto.randomUUID(), createdAt: now, updatedAt: now };
-    const doses = buildMadridInitialVaccinePlan(child.birthDate).map((dose) => ({
-      ...dose,
-      id: crypto.randomUUID(),
-      childId: child.id,
-    }));
+    const settings = await this.db.settings.get("main");
+    const doses = buildInitialVaccinePlan(child.birthDate, settings?.healthRegion ?? "madrid").map(
+      (dose) => ({
+        ...dose,
+        id: crypto.randomUUID(),
+        childId: child.id,
+      }),
+    );
     await this.db.transaction(
       "rw",
       this.db.children,
@@ -31,6 +38,55 @@ export class DexieChildRepository implements ChildRepository {
       },
     );
     return child;
+  }
+
+  async rebuildVaccinePlans(region: HealthRegion) {
+    assert(healthRegions.includes(region), "Comunidad sanitaria no válida.");
+    await this.db.transaction(
+      "rw",
+      [
+        this.db.children,
+        this.db.plannedVaccineDoses,
+        this.db.appliedVaccineDoses,
+        this.db.settings,
+      ],
+      async () => {
+        const children = await this.db.children.toArray();
+        for (const child of children) {
+          const plans = await this.db.plannedVaccineDoses
+            .where("childId")
+            .equals(child.id)
+            .toArray();
+          const applications = await this.db.appliedVaccineDoses
+            .where("childId")
+            .equals(child.id)
+            .toArray();
+          const appliedPlanIds = new Set(
+            applications.flatMap((application) =>
+              application.plannedDoseId ? [application.plannedDoseId] : [],
+            ),
+          );
+          const retained = plans.filter((plan) => appliedPlanIds.has(plan.id));
+          const retainedKeys = new Set(
+            retained.map((plan) => `${plan.vaccineName}|${plan.doseLabel}`),
+          );
+          await this.db.plannedVaccineDoses
+            .where("childId")
+            .equals(child.id)
+            .filter((plan) => !appliedPlanIds.has(plan.id))
+            .delete();
+          const additions = buildInitialVaccinePlan(child.birthDate, region)
+            .filter((dose) => !retainedKeys.has(`${dose.vaccineName}|${dose.doseLabel}`))
+            .map((dose: NewPlannedVaccineDose) => ({
+              ...dose,
+              id: crypto.randomUUID(),
+              childId: child.id,
+            }));
+          if (additions.length) await this.db.plannedVaccineDoses.bulkAdd(additions);
+        }
+        await this.db.settings.update("main", { healthRegion: region });
+      },
+    );
   }
   async update(id: string, input: ChildInput) {
     const value = validateChild(input);

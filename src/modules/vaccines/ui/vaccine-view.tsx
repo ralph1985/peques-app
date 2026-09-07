@@ -9,6 +9,7 @@ import {
   type PlannedVaccineDoseWithStatus,
   type AppliedVaccineDose,
 } from "../domain/vaccine-calendar";
+import { vaccineCalendarSources } from "../domain/vaccine-calendar";
 import { updatePlannedVaccineDose } from "../application/update-planned-vaccine-dose";
 import { markVaccineDoseApplied } from "../application/mark-vaccine-dose-applied";
 import { updateAppliedVaccineDose } from "../application/update-applied-vaccine-dose";
@@ -36,6 +37,7 @@ export function VaccineView({ childId, data }: { childId: string; data: ChildDat
   const now = useClock();
   const view = family.settings.vaccineView;
   const doses = assignPlannedVaccineDoseStatuses(data.planned, data.applied, now);
+  const source = vaccineCalendarSources[family.settings.healthRegion];
   async function changeView(view: "status" | "timeline") {
     try {
       await app.settings.update({ vaccineView: view });
@@ -89,8 +91,13 @@ export function VaccineView({ childId, data }: { childId: string; data: ChildDat
           ))}
         </div>
         <p className={styles.notes}>
-          Calendario orientativo de Madrid 2026, editable. Confirma las campañas y cualquier cambio
-          con tu centro de salud.
+          Calendario orientativo de {source.region === "madrid" ? "Madrid" : "Castilla-La Mancha"}{" "}
+          2026, editable. Confirma campañas, grupos de riesgo y cualquier cambio con tu centro de
+          salud.{" "}
+          <a href={source.technicalDocumentUrl} target="_blank" rel="noopener noreferrer">
+            Fuente oficial
+          </a>{" "}
+          · verificado {source.verifiedOn}.
         </p>
       </section>
       <section className={styles.panel}>

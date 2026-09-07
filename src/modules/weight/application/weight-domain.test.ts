@@ -22,7 +22,7 @@ const entry = (
 ): WeightEntry => ({ id: crypto.randomUUID(), childId, measuredOn, weightGrams, place });
 
 describe("retained weight domain", () => {
-  it.each([NaN, Infinity, 999, 20001, 6000.5])("rejects invalid grams %s", (weightGrams) => {
+  it.each([NaN, Infinity, 199, 150001, 6000.5])("rejects invalid grams %s", (weightGrams) => {
     expect(() => createWeightEntry(entry("2024-04-01", weightGrams))).toThrow();
   });
   it.each(["2023-02-29", "2024-04-31", "2024-13-01", "", "01/04/2024"])(
@@ -33,9 +33,9 @@ describe("retained weight domain", () => {
   );
   it("normalizes notes and accepts the original weight boundaries", () => {
     expect(
-      createWeightEntry({ ...entry("2024-02-29", 1000), notes: "  Nota ficticia  " }).notes,
+      createWeightEntry({ ...entry("2024-02-29", 200), notes: "  Nota ficticia  " }).notes,
     ).toBe("Nota ficticia");
-    expect(createWeightEntry(entry("2024-03-01", 20000)).weightGrams).toBe(20000);
+    expect(createWeightEntry(entry("2024-03-01", 150000)).weightGrams).toBe(150000);
   });
   it("preserves chronology, signed differences and daily averages without mutating entries", () => {
     const entries = [

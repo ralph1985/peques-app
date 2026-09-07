@@ -76,6 +76,30 @@ export class PequesDatabase extends Dexie {
             settings.firstUsedAt ??= firstUsedAt;
           });
       });
+    this.version(4)
+      .stores({
+        children: "id, createdAt",
+        weightEntries: "id, childId, [childId+measuredOn]",
+        growthMeasurements: "id, childId, [childId+measuredOn]",
+        plannedVaccineDoses: "id, childId, [childId+plannedDate]",
+        appliedVaccineDoses: "id, childId, &plannedDoseId, [childId+appliedOn]",
+        sleepEntries: "id, childId, [childId+startedAt]",
+        travelChecklistCategories: "slug, sortOrder",
+        travelChecklistItems:
+          "id, category, storageLocationId, [category+sortOrder], [storageLocationId+storageSortOrder]",
+        travelStorageLocations: "id, parentId, sortOrder",
+        settings: "id",
+      })
+      .upgrade((transaction) =>
+        transaction
+          .table<AppSettings, string>("settings")
+          .toCollection()
+          .modify((settings) => {
+            settings.healthRegion ??= "madrid";
+            settings.nextAppointment ??= null;
+            settings.consultationQuestions ??= [];
+          }),
+      );
     this.on("populate", async () => {
       await this.settings.add(createDefaultSettings());
       await this.travelChecklistCategories.bulkAdd(

@@ -1,6 +1,19 @@
 import type { Child } from "./child";
 export type BabyProfile = Pick<Child, "name" | "birthDate" | "birthTime">;
 
+export function growthReferenceBirthDate(
+  profile: Pick<Child, "birthDate" | "gestationalAgeWeeks" | "gestationalAgeDays">,
+) {
+  if (profile.gestationalAgeWeeks === undefined || profile.gestationalAgeWeeks >= 37) {
+    return profile.birthDate;
+  }
+  const correctionDays =
+    40 * 7 - (profile.gestationalAgeWeeks * 7 + (profile.gestationalAgeDays ?? 0));
+  const dueDate = new Date(`${profile.birthDate}T00:00:00.000Z`);
+  dueDate.setUTCDate(dueDate.getUTCDate() + correctionDays);
+  return dueDate.toISOString().slice(0, 10);
+}
+
 export function formatBirthDate(profile: BabyProfile): string {
   const birthDate = parseUtcDate(profile.birthDate);
 

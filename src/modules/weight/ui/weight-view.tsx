@@ -22,13 +22,16 @@ import { GrowthChart } from "@/modules/growth/ui/growth-chart";
 import { GrowthMeasurementPanel } from "@/modules/growth/ui/growth-measurement-view";
 import type { GrowthIndicator } from "@/modules/growth/application/who-growth";
 import styles from "@/app/(app)/peso/page.module.css";
+import { growthReferenceBirthDate } from "@/modules/profile/domain/baby-profile";
 
 export function WeightForm({
   childId,
+  birthDate,
   entry,
   onDone,
 }: {
   childId: string;
+  birthDate: string;
   entry?: WeightEntry;
   onDone: () => void;
 }) {
@@ -44,7 +47,7 @@ export function WeightForm({
         assert(isWeightPlace(place), "Lugar no válido.");
         const input = {
           measuredOn: field(data, "measuredOn"),
-          weightGrams: Number(field(data, "weightGrams")),
+          weightGrams: Math.round(Number(field(data, "weightKg").replace(",", ".")) * 1000),
           place,
           notes: field(data, "notes"),
         };
@@ -59,20 +62,21 @@ export function WeightForm({
           name="measuredOn"
           type="date"
           required
+          min={birthDate}
           defaultValue={entry?.measuredOn ?? localDate()}
         />
       </label>
       <label>
-        Gramos
+        Peso (kg)
         <input
-          name="weightGrams"
+          name="weightKg"
           type="number"
-          inputMode="numeric"
-          min={1000}
-          max={20000}
-          step={1}
+          inputMode="decimal"
+          min={0.2}
+          max={150}
+          step={0.001}
           required
-          defaultValue={entry?.weightGrams}
+          defaultValue={entry ? entry.weightGrams / 1000 : undefined}
         />
       </label>
       <label>
@@ -93,9 +97,11 @@ export function WeightForm({
 
 export function WeightCreateButton({
   childId,
+  birthDate,
   compact = false,
 }: {
   childId: string;
+  birthDate: string;
   compact?: boolean;
 }) {
   const [open, setOpen] = useState(false);
@@ -118,7 +124,7 @@ export function WeightCreateButton({
         >
           <div className="sheet-content">
             <h2 id="new-weight-title">Añadir peso</h2>
-            <WeightForm childId={childId} onDone={() => setOpen(false)} />
+            <WeightForm childId={childId} birthDate={birthDate} onDone={() => setOpen(false)} />
           </div>
         </BottomSheet>
       )}
@@ -140,6 +146,7 @@ export function WeightView({
   const [indicator, setIndicator] = useState<GrowthIndicator>("weightForAge");
   const [sheet, setSheet] = useState<{ mode: "edit" | "delete"; entry: WeightEntry } | null>(null);
   const visible = useMemo(() => filterWeightEntries(entries, filter), [entries, filter]);
+  const growthBirthDate = growthReferenceBirthDate(child);
   return (
     <>
       <section className={styles.panel} data-tutorial-section="growth">
@@ -176,11 +183,11 @@ export function WeightView({
           </select>
         </label>
         {indicator === "weightForAge" ? (
-          <WeightChart birthDate={child.birthDate} sex={child.sex} entries={visible} />
+          <WeightChart birthDate={growthBirthDate} sex={child.sex} entries={visible} />
         ) : (
           <GrowthChart
             indicator={indicator}
-            birthDate={child.birthDate}
+            birthDate={growthBirthDate}
             sex={child.sex}
             weights={visible}
             measurements={growthMeasurements}
@@ -191,11 +198,11 @@ export function WeightView({
         <h2>Histórico</h2>
         {!visible.length && <p className={styles.empty}>Aún no hay pesos en este filtro.</p>}
         <ol className={styles.history}>
-          {buildWeightHistory(visible).map(({ entry, differenceGrams, averageGramsPerDay }) => (
+          {buildWeightHistory(visible).map(({ entry, differenceGrams }) => (
             <li key={entry.id}>
               <div className={styles.historySummary}>
                 <div>
-                  <strong>{entry.weightGrams.toLocaleString("es-ES")} g</strong>
+                  <strong>{formatWeight(entry.weightGrams)}</strong>
                   <span>
                     {formatWeightFilterLabel(entry.place)} ·{" "}
                     <time dateTime={entry.measuredOn}>{entry.measuredOn}</time>
@@ -203,7 +210,7 @@ export function WeightView({
                   <span>
                     {differenceGrams === null
                       ? "Sin comparación"
-                      : `${differenceGrams > 0 ? "+" : ""}${differenceGrams} g · ${averageGramsPerDay === null ? "Sin promedio diario" : `${averageGramsPerDay} g/día`}`}
+                      : `${differenceGrams > 0 ? "+" : ""}${formatWeight(differenceGrams)} desde el anterior`}
                   </span>
                   {entry.notes && <span>{entry.notes}</span>}
                 </div>
@@ -228,8 +235,12 @@ export function WeightView({
           ))}
         </ol>
       </section>
-      <GrowthMeasurementPanel childId={child.id} measurements={growthMeasurements} />
-      <WeightCreateButton childId={child.id} />
+      <GrowthMeasurementPanel
+        childId={child.id}
+        birthDate={child.birthDate}
+        measurements={growthMeasurements}
+      />
+      <WeightCreateButton childId={child.id} birthDate={child.birthDate} />
       {sheet && (
         <BottomSheet
           ariaLabel="Gestionar peso"
@@ -240,7 +251,12 @@ export function WeightView({
           <div className="sheet-content">
             <h2 id="weight-edit-title">{sheet.mode === "edit" ? "Editar peso" : "Borrar peso"}</h2>
             {sheet.mode === "edit" ? (
-              <WeightForm childId={child.id} entry={sheet.entry} onDone={() => setSheet(null)} />
+              <WeightForm
+                childId={child.id}
+                birthDate={child.birthDate}
+                entry={sheet.entry}
+                onDone={() => setSheet(null)}
+              />
             ) : (
               <LocalForm
                 submitLabel="Borrar peso"
@@ -249,8 +265,8 @@ export function WeightView({
                 action={() => deleteWeightEntry(app.forChild(child.id).weight, sheet.entry.id)}
               >
                 <p>
-                  ¿Borrar el peso de {sheet.entry.weightGrams} g del {sheet.entry.measuredOn}? Esta
-                  acción no se puede deshacer.
+                  ¿Borrar el peso de {formatWeight(sheet.entry.weightGrams)} del{" "}
+                  {sheet.entry.measuredOn}? Esta acción no se puede deshacer.
                 </p>
               </LocalForm>
             )}
@@ -259,4 +275,8 @@ export function WeightView({
       )}
     </>
   );
+}
+
+function formatWeight(grams: number) {
+  return `${(grams / 1000).toLocaleString("es-ES", { maximumFractionDigits: 3 })} kg`;
 }

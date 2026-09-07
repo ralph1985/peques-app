@@ -2,11 +2,22 @@
 import { ChildManager } from "@/modules/profile/ui/child-manager";
 import { BackupPanel } from "@/modules/backup/ui/backup-panel";
 import { TutorialRestartButton } from "@/shared/ui/app-tutorial";
+import { AppointmentPanel, HealthSettingsPanel } from "@/modules/settings/ui/health-settings-panel";
+import Link from "next/link";
 export default function SettingsPage() {
   return (
     <main className="content-page" data-tutorial-section="settings">
       <h1>Ajustes</h1>
       <ChildManager />
+      <HealthSettingsPanel />
+      <AppointmentPanel />
+      <section className="local-panel">
+        <h2>Organización familiar</h2>
+        <p>La lista de viaje sigue disponible como módulo independiente.</p>
+        <Link className="text-button" href="/viaje">
+          Abrir lista de viaje
+        </Link>
+      </section>
       <BackupPanel />
       <section className="local-panel">
         <h2>Ayuda</h2>

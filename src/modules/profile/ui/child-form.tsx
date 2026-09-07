@@ -32,6 +32,12 @@ export function ChildForm({
                 ? ("male" as const)
                 : ("unspecified" as const),
           healthId: field(data, "healthId") || undefined,
+          gestationalAgeWeeks: field(data, "gestationalAgeWeeks")
+            ? Number(field(data, "gestationalAgeWeeks"))
+            : undefined,
+          gestationalAgeDays: field(data, "gestationalAgeDays")
+            ? Number(field(data, "gestationalAgeDays"))
+            : undefined,
         };
         return child ? app.children.update(child.id, input) : app.children.create(input);
       }}
@@ -68,15 +74,51 @@ export function ChildForm({
           <option value="male">Niño</option>
         </select>
       </label>
-      <label>
-        Identificador sanitario · opcional
-        <input
-          name="healthId"
-          maxLength={80}
-          autoComplete="off"
-          defaultValue={child?.healthId ?? ""}
-        />
-      </label>
+      <details>
+        <summary>Datos avanzados</summary>
+        <label>
+          Identificador sanitario · opcional y sensible
+          <input
+            name="healthId"
+            maxLength={80}
+            autoComplete="off"
+            defaultValue={child?.healthId ?? ""}
+          />
+        </label>
+      </details>
+      <fieldset className="form-fieldset">
+        <legend>Prematuridad · opcional</legend>
+        <p className="form-help">
+          Solo sirve para mostrar edad corregida en las gráficas. Confírmalo con tu pediatra si el
+          nacimiento fue prematuro.
+        </p>
+        <div className="form-grid-two">
+          <label>
+            Semanas de gestación
+            <input
+              name="gestationalAgeWeeks"
+              type="number"
+              min={22}
+              max={42}
+              step={1}
+              inputMode="numeric"
+              defaultValue={child?.gestationalAgeWeeks ?? ""}
+            />
+          </label>
+          <label>
+            Días adicionales
+            <input
+              name="gestationalAgeDays"
+              type="number"
+              min={0}
+              max={6}
+              step={1}
+              inputMode="numeric"
+              defaultValue={child?.gestationalAgeDays ?? ""}
+            />
+          </label>
+        </div>
+      </fieldset>
       {child && (
         <p>
           Si cambias el nacimiento, revisa las fechas de vacunas. Se conservan las citas y

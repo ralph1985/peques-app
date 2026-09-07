@@ -150,7 +150,7 @@ describe("copia completa y restauración atómica", () => {
     [
       "future version",
       (value) => {
-        Object.assign(value, { schemaVersion: 4 });
+        Object.assign(value, { schemaVersion: 5 });
       },
     ],
     [

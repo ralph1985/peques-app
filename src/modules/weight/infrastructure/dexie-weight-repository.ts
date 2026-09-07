@@ -19,7 +19,10 @@ export class DexieWeightRepository implements WeightRepository {
   async createWeightEntry(input: NewWeightEntry) {
     const value = createWeightEntry({ ...input, notes: optionalText(input.notes, "Notas") });
     return this.db.transaction("rw", this.db.children, this.db.weightEntries, async () => {
+      const child = await this.db.children.get(this.childId);
       await requireChild(this.db, this.childId);
+      if (value.measuredOn < child!.birthDate)
+        throw new Error("El peso no puede ser anterior al nacimiento.");
       const entry = { ...value, id: crypto.randomUUID(), childId: this.childId };
       await this.db.weightEntries.add(entry);
       return entry;
@@ -28,7 +31,10 @@ export class DexieWeightRepository implements WeightRepository {
   async updateWeightEntry(id: string, input: NewWeightEntry) {
     const value = createWeightEntry({ ...input, notes: optionalText(input.notes, "Notas") });
     return this.db.transaction("rw", this.db.children, this.db.weightEntries, async () => {
+      const child = await this.db.children.get(this.childId);
       await requireChild(this.db, this.childId);
+      if (value.measuredOn < child!.birthDate)
+        throw new Error("El peso no puede ser anterior al nacimiento.");
       await requireOwned(this.db.weightEntries, id, this.childId);
       const entry = { ...value, id, childId: this.childId };
       await this.db.weightEntries.put(entry);

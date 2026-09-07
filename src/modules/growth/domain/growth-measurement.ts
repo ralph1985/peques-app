@@ -2,12 +2,15 @@ import { assert, isDate, optionalText } from "@/shared/domain/validation";
 
 export const growthMeasurementKinds = ["stature", "headCircumference"] as const;
 export type GrowthMeasurementKind = (typeof growthMeasurementKinds)[number];
+export const growthMeasurementPositions = ["length", "height"] as const;
+export type GrowthMeasurementPosition = (typeof growthMeasurementPositions)[number];
 
 export type GrowthMeasurement = {
   id: string;
   childId: string;
   measuredOn: string;
   kind: GrowthMeasurementKind;
+  position?: GrowthMeasurementPosition;
   valueMillimeters: number;
   notes?: string | null;
 };
@@ -25,6 +28,13 @@ export function createGrowthMeasurement(input: NewGrowthMeasurement): NewGrowthM
   const issues: string[] = [];
   if (!isDate(input.measuredOn)) issues.push("La fecha de la medida no es válida.");
   if (!growthMeasurementKinds.includes(input.kind)) issues.push("El tipo de medida no es válido.");
+  if (
+    input.kind === "stature" &&
+    input.position !== undefined &&
+    !growthMeasurementPositions.includes(input.position)
+  ) {
+    issues.push("La forma de medir la estatura no es válida.");
+  }
   const limits = input.kind === "stature" ? [300, 2200] : [200, 800];
   if (
     !Number.isInteger(input.valueMillimeters) ||
@@ -42,6 +52,7 @@ export function createGrowthMeasurement(input: NewGrowthMeasurement): NewGrowthM
   return {
     measuredOn: input.measuredOn,
     kind: input.kind,
+    ...(input.position ? { position: input.position } : {}),
     valueMillimeters: input.valueMillimeters,
     notes: optionalText(input.notes, "Notas"),
   };

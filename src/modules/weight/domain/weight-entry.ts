@@ -48,10 +48,10 @@ function validateWeightEntry(input: NewWeightEntry): string[] {
 
   if (
     !Number.isInteger(input.weightGrams) ||
-    input.weightGrams < 1000 ||
-    input.weightGrams > 20000
+    input.weightGrams < 200 ||
+    input.weightGrams > 150000
   ) {
-    issues.push("El peso debe estar entre 1000 y 20000 gramos.");
+    issues.push("El peso debe estar entre 200 gramos y 150 kilogramos.");
   }
 
   if (!isWeightPlace(input.place)) {

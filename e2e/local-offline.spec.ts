@@ -16,7 +16,7 @@ async function addWeight(page: Page, grams: string) {
   await page.getByRole("button", { name: "Añadir peso", exact: true }).click();
   const dialog = page.getByRole("dialog");
   await dialog.getByLabel("Fecha", { exact: true }).fill("2024-04-01");
-  await dialog.getByLabel("Gramos").fill(grams);
+  await dialog.getByLabel("Peso (kg)").fill((Number(grams) / 1000).toString());
   await dialog.getByRole("button", { name: "Guardar peso" }).click();
   await expect(dialog).toHaveCount(0);
 }
@@ -204,16 +204,24 @@ test("mobile flows persist through browser restart and entirely offline CRUD", a
   await expect(
     page.getByRole("button", { name: "Cambiar hijo: Peque ficticio B", exact: true }),
   ).toBeVisible();
-  await expect(page.getByText("7200 g", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("7,2 kg", { exact: true }).first()).toBeVisible();
   await page.getByRole("button", { name: "Editar peso del 2024-04-01" }).click();
-  await page.getByRole("dialog").getByLabel("Gramos").fill("7300");
+  await page.getByRole("dialog").getByLabel("Peso (kg)").fill("7.3");
   await page.getByRole("dialog").getByRole("button", { name: "Guardar cambios" }).click();
-  await expect(page.getByText("7300 g", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("7,3 kg", { exact: true }).first()).toBeVisible();
   await page.getByRole("button", { name: "Borrar peso del 2024-04-01" }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Borrar peso", exact: true }).click();
   await expect(page.getByText("No hay pesos para mostrar aquí.")).toBeVisible();
   await addWeight(page, "7400");
-  for (const route of ["/", "/vacunas/", "/sueno/", "/viaje/", "/calendario/", "/ajustes/"]) {
+  for (const route of [
+    "/",
+    "/vacunas/",
+    "/sueno/",
+    "/viaje/",
+    "/consulta/",
+    "/calendario/",
+    "/ajustes/",
+  ]) {
     await visit(route);
     await expect(
       page.getByRole("button", { name: "Cambiar hijo: Peque ficticio B", exact: true }),
@@ -236,7 +244,7 @@ test("mobile flows persist through browser restart and entirely offline CRUD", a
   await visit("/sueno/");
   await expect(page.getByRole("heading", { name: /Durmiendo desde/ })).toBeVisible();
   await visit("/peso/");
-  await expect(page.getByText("6100 g", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("6,1 kg", { exact: true }).first()).toBeVisible();
   await context.close();
   context = await chromium.launchPersistentContext(profile, {
     headless: true,
@@ -392,7 +400,7 @@ test("vaccines, travel, strong child deletion and local backup restoration", asy
   const download = await downloadPromise;
   const contents = await readFile((await download.path())!, "utf8");
   const backup = JSON.parse(contents) as PequesBackup;
-  expect(backup).toMatchObject({ format: "peques-backup", schemaVersion: 3 });
+  expect(backup).toMatchObject({ format: "peques-backup", schemaVersion: 4 });
   expect(backup.data.children).toHaveLength(1);
   expect(backup.data.weightEntries).toHaveLength(1);
   expect(backup.data.plannedVaccineDoses).toHaveLength(22);
@@ -537,6 +545,7 @@ test("child editing, identified family calendar and keyboard checklist ordering"
     .getByRole("dialog")
     .getByLabel("Nombre", { exact: true })
     .fill("Peque ficticio editado");
+  await page.getByRole("dialog").getByText("Datos avanzados", { exact: true }).click();
   await page
     .getByRole("dialog")
     .getByLabel("Identificador sanitario · opcional")

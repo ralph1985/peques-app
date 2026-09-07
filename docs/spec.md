@@ -12,7 +12,7 @@ Borrar los datos del navegador, eliminar el almacenamiento del sitio o perder el
 
 ## Hijos y aislamiento
 
-Sin hijos se muestra «Añade tu primer hijo». Nombre y fecha de nacimiento son obligatorios; hora, sexo e identificador sanitario son opcionales. Se usan UUID y timestamps UTC. Crear un hijo genera su plan vacunal según nacimiento, sin datos personales de ejemplo. El selector recuerda el último hijo.
+Sin hijos se muestra «Añade tu primer hijo». Nombre y fecha de nacimiento son obligatorios; hora, sexo, identificador sanitario y edad gestacional son opcionales. Se usan UUID y timestamps UTC. Crear un hijo genera su plan vacunal según nacimiento y la comunidad familiar seleccionada, sin datos personales de ejemplo. El selector recuerda el último hijo.
 
 Cada peso, planificación, aplicación y descanso lleva `childId`. Los repositorios validan existencia y pertenencia dentro de las transacciones. Un identificador de otro hijo no permite editar ni borrar sus filas. Inicio, Peso, Vacunas, Sueño y Calendario cambian con el hijo activo. Viaje no cambia de contenido.
 
@@ -20,7 +20,7 @@ En Ajustes se pueden añadir, editar y eliminar hijos. El borrado muestra los re
 
 ## Seguimiento
 
-Crecimiento mantiene el alta, edición, borrado, histórico, diferencia y promedio del peso, y añade longitud/estatura y perímetro cefálico. `/peso` ofrece gráficas SVG de peso, talla, IMC, perímetro cefálico y peso para longitud/estatura. El IMC y el peso para longitud/estatura sólo aparecen con peso y talla del mismo día. Las referencias OMS son sexoespecíficas, locales y orientativas: peso para edad hasta 10 años, talla e IMC hasta 19, y perímetro cefálico/peso para talla hasta 5.
+Crecimiento mantiene el alta, edición, borrado e histórico del peso en kg, y añade longitud tumbado, estatura de pie y perímetro cefálico. `/peso` ofrece gráficas SVG de peso, talla, IMC, perímetro cefálico y peso para longitud/estatura. El IMC y el peso para longitud/estatura sólo aparecen con peso y talla del mismo día. Las referencias OMS son sexoespecíficas, locales y orientativas: peso para edad hasta 10 años, talla e IMC hasta 19, y perímetro cefálico/peso para talla hasta 5. En prematuridad se usa edad corregida como referencia de crecimiento sin alterar la edad cronológica visible.
 
 Vacunas conserva estados pendiente, próxima, retrasada y aplicada, vistas por estado/edad, edición de fecha y dosis, lugar, lote y notas. Una aplicación puede reabrirse tras confirmación; el plan permanece. Las aplicaciones independientes son editables y borrables. No se inventan reglas médicas nuevas ni fechas de campañas.
 
@@ -28,7 +28,7 @@ Sueño conserva siestas/noches, registro manual, edición del inicio, fin y tipo
 
 Viaje permite crear/editar/borrar categorías y ubicaciones jerárquicas, crear/editar/marcar/borrar elementos y reiniciar marcas. Los órdenes por preparación y ubicación son independientes. No se borran categorías ni ubicaciones todavía referenciadas. Las ubicaciones no pueden formar ciclos.
 
-Calendario tiene agenda y mes, eventos derivados de pesos, vacunas con fecha y sueño. «Todos los hijos» identifica cada evento y selecciona su hijo al abrir la sección de origen. No se utiliza un calendario remoto.
+Calendario tiene agenda y mes, eventos derivados de pesos, vacunas con fecha y sueño. «Todos los hijos» identifica cada evento y selecciona su hijo al abrir la sección de origen. Consulta añade una próxima cita, preguntas para pediatría y un informe imprimible local. No se utiliza un calendario remoto.
 
 ## Copias y PWA
 

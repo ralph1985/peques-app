@@ -134,7 +134,11 @@ function buildRawPoints(
       ),
     );
   if (indicator === "weightForLength" || indicator === "weightForHeight")
-    return sameDatePairs(sortedWeights, sortedMeasurements).map((pair) => ({
+    return sameDatePairs(
+      sortedWeights,
+      sortedMeasurements,
+      indicator === "weightForHeight" ? "height" : "length",
+    ).map((pair) => ({
       date: pair.date,
       value: pair.weightGrams / 1000,
       x: pair.statureMillimeters,
@@ -148,9 +152,19 @@ function agePoint(birthDate: string, date: string, value: number): RawPoint {
   return { date, value, x: ageDays, ageDays };
 }
 
-function sameDatePairs(weights: WeightEntry[], measurements: GrowthMeasurement[]) {
+function sameDatePairs(
+  weights: WeightEntry[],
+  measurements: GrowthMeasurement[],
+  position?: "length" | "height",
+) {
   return measurements
-    .filter((entry) => entry.kind === "stature")
+    .filter(
+      (entry) =>
+        entry.kind === "stature" &&
+        (position === undefined ||
+          entry.position === position ||
+          (position === "length" && !entry.position)),
+    )
     .flatMap((measurement) => {
       const weight = weights.find((entry) => entry.measuredOn === measurement.measuredOn);
       return weight

@@ -7,6 +7,8 @@ export type Child = {
   birthTime?: string;
   sex?: "female" | "male" | "unspecified";
   healthId?: string;
+  gestationalAgeWeeks?: number;
+  gestationalAgeDays?: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -28,11 +30,26 @@ export function validateChild(input: ChildInput): ChildInput {
     "El sexo no es válido.",
   );
   const healthId = optionalText(input.healthId, "Identificador sanitario", 80);
+  const gestationalAgeWeeks = input.gestationalAgeWeeks;
+  const gestationalAgeDays = input.gestationalAgeDays ?? 0;
+  assert(
+    gestationalAgeWeeks === undefined ||
+      (Number.isInteger(gestationalAgeWeeks) &&
+        gestationalAgeWeeks >= 22 &&
+        gestationalAgeWeeks <= 42),
+    "Las semanas de gestación deben estar entre 22 y 42.",
+  );
+  assert(
+    gestationalAgeWeeks === undefined ||
+      (Number.isInteger(gestationalAgeDays) && gestationalAgeDays >= 0 && gestationalAgeDays <= 6),
+    "Los días de gestación deben estar entre 0 y 6.",
+  );
   return {
     name,
     birthDate: input.birthDate,
     ...(input.birthTime ? { birthTime: input.birthTime } : {}),
     sex: input.sex ?? "unspecified",
     ...(healthId ? { healthId } : {}),
+    ...(gestationalAgeWeeks !== undefined ? { gestationalAgeWeeks, gestationalAgeDays } : {}),
   };
 }

@@ -1,4 +1,5 @@
 import type { Child, ChildInput } from "../domain/child";
+import type { HealthRegion } from "@/modules/settings/domain/settings";
 
 export type ChildDataCounts = {
   weights: number;
@@ -15,4 +16,5 @@ export interface ChildRepository {
   active(): Promise<Child | null>;
   counts(id: string): Promise<ChildDataCounts>;
   delete(id: string, confirmedName: string): Promise<void>;
+  rebuildVaccinePlans(region: HealthRegion): Promise<void>;
 }

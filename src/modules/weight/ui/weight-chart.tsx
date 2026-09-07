@@ -233,16 +233,6 @@ function WeightChartRangeToggle({
       >
         10 años
       </button>
-      <button
-        aria-pressed={range === "nineteenYears"}
-        className={
-          range === "nineteenYears" ? styles.chartRangeButtonActive : styles.chartRangeButton
-        }
-        onClick={() => onRangeChange("nineteenYears")}
-        type="button"
-      >
-        19 años
-      </button>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { localDate } from "@/shared/domain/validation";
+import type { HealthRegion } from "@/modules/settings/domain/settings";
 export type PlannedVaccineDose = {
   id: string;
   childId: string;
@@ -46,6 +47,14 @@ export type MadridCalendarDoseDefinition = {
   notes?: string;
 };
 
+export type VaccineCalendarSource = {
+  region: HealthRegion;
+  name: string;
+  verifiedOn: string;
+  posterUrl: string;
+  technicalDocumentUrl: string;
+};
+
 export class PlannedVaccineDoseValidationError extends Error {
   constructor(readonly issues: string[]) {
     super(issues.join(" "));
@@ -60,12 +69,27 @@ export class AppliedVaccineDoseValidationError extends Error {
   }
 }
 
-export const madridVaccineCalendarSource = {
+export const madridVaccineCalendarSource: VaccineCalendarSource = {
+  region: "madrid",
   name: "Calendario de vacunacion/inmunizacion a lo largo de toda la vida 2026. Comunidad de Madrid.",
   verifiedOn: "2026-07-18",
   posterUrl: "https://www.comunidad.madrid/publicacion/ref/51768",
   technicalDocumentUrl: "https://www.comunidad.madrid/publicacion/ref/51747",
 } as const;
+
+export const castillaLaManchaVaccineCalendarSource: VaccineCalendarSource = {
+  region: "castillaLaMancha",
+  name: "Calendario de vacunaciones e inmunizaciones a lo largo de toda la vida 2026. Castilla-La Mancha.",
+  verifiedOn: "2026-09-07",
+  posterUrl: "https://sanidad.castillalamancha.es/ciudadanos/vacunacion/calendario-vacunaciones",
+  technicalDocumentUrl:
+    "https://sanidad.castillalamancha.es/sites/sescam.castillalamancha.es/files/documentos/pdf/20260107/20251230_documento_tecnico_calendario_sistematico_2026.pdf",
+};
+
+export const vaccineCalendarSources: Record<HealthRegion, VaccineCalendarSource> = {
+  madrid: madridVaccineCalendarSource,
+  castillaLaMancha: castillaLaManchaVaccineCalendarSource,
+};
 
 export const madridInitialCalendarDefinitions: MadridCalendarDoseDefinition[] = [
   {
@@ -206,7 +230,26 @@ export const madridInitialCalendarDefinitions: MadridCalendarDoseDefinition[] = 
 ];
 
 export function buildMadridInitialVaccinePlan(birthDate: string): NewPlannedVaccineDose[] {
-  return madridInitialCalendarDefinitions
+  return buildInitialVaccinePlan(birthDate, "madrid");
+}
+
+export function buildInitialVaccinePlan(
+  birthDate: string,
+  region: HealthRegion,
+): NewPlannedVaccineDose[] {
+  const definitions =
+    region === "castillaLaMancha"
+      ? madridInitialCalendarDefinitions.map((definition) =>
+          definition.vaccineName === "Meningococo C"
+            ? {
+                ...definition,
+                vaccineName: "Meningococo ACWY",
+                notes: "Calendario de Castilla-La Mancha 2026.",
+              }
+            : definition,
+        )
+      : madridInitialCalendarDefinitions;
+  return definitions
     .map((definition) =>
       createPlannedVaccineDose({
         vaccineName: definition.vaccineName,

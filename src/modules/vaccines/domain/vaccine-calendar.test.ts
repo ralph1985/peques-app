@@ -1,6 +1,7 @@
 import { expect, it } from "vitest";
 import {
   buildMadridInitialVaccinePlan,
+  buildInitialVaccinePlan,
   calculatePlannedDate,
   getPlannedVaccineDoseStatus,
   createAppliedVaccineDose,
@@ -23,6 +24,17 @@ it("derives separate plans from birth and clamps month-end appointments", () => 
   expect(a[0].plannedDate).toBe("2024-03-01");
   expect(b[0].plannedDate).toBe("2024-04-01");
   expect(a[0]).not.toBe(b[0]);
+});
+
+it("uses the Castilla-La Mancha meningococcal schedule without changing Madrid", () => {
+  const madrid = buildInitialVaccinePlan("2026-01-01", "madrid");
+  const castillaLaMancha = buildInitialVaccinePlan("2026-01-01", "castillaLaMancha");
+  expect(
+    madrid.filter((dose) => dose.ageLabel === "4 meses").map((dose) => dose.vaccineName),
+  ).toContain("Meningococo C");
+  expect(
+    castillaLaMancha.filter((dose) => dose.ageLabel === "4 meses").map((dose) => dose.vaccineName),
+  ).toContain("Meningococo ACWY");
 });
 
 it.each([

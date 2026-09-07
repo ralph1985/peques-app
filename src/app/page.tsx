@@ -7,6 +7,7 @@ import { useLocalData } from "@/shared/ui/use-local-data";
 import { useClock } from "@/shared/ui/use-clock";
 import { buildHomeAgenda } from "@/modules/home/application/home-agenda";
 import { buildWeightTrendSummary } from "@/modules/weight/application/weight-trend-summary";
+import { growthReferenceBirthDate } from "@/modules/profile/domain/baby-profile";
 import { assignPlannedVaccineDoseStatuses } from "@/modules/vaccines/domain/vaccine-calendar";
 import { deriveCalendarEvents } from "@/modules/calendar/application/derive-calendar-events";
 import { filterCalendarEvents } from "@/modules/calendar/domain/calendar-event";
@@ -42,7 +43,12 @@ export default function Home() {
           Nacimiento: {child.birthDate}
           {child.birthTime ? ` · ${child.birthTime}` : ""}
         </p>
-        {child.healthId && <p>Identificador sanitario: {child.healthId}</p>}
+        {child.gestationalAgeWeeks !== undefined && child.gestationalAgeWeeks < 37 && (
+          <p>
+            Edad corregida para crecimiento: {growthReferenceBirthDate(child)} como fecha de
+            referencia
+          </p>
+        )}
       </section>
       {state?.error ? (
         <p role="alert">No se pudieron leer los datos locales.</p>
@@ -162,7 +168,11 @@ export default function Home() {
           <div className="sheet-content">
             <h2 id="home-add-title">{sheet === "weight" ? "Añadir peso" : "Añadir registro"}</h2>
             {sheet === "weight" ? (
-              <WeightForm childId={child.id} onDone={() => setSheet(null)} />
+              <WeightForm
+                childId={child.id}
+                birthDate={child.birthDate}
+                onDone={() => setSheet(null)}
+              />
             ) : (
               <div className={styles.addMenuOptions}>
                 <button className={styles.addMenuButton} onClick={() => setSheet("weight")}>

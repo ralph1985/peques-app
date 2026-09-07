@@ -20,7 +20,10 @@ export class DexieGrowthMeasurementRepository implements GrowthMeasurementReposi
   async createGrowthMeasurement(input: NewGrowthMeasurement) {
     const value = createGrowthMeasurement(input);
     return this.db.transaction("rw", this.db.children, this.db.growthMeasurements, async () => {
+      const child = await this.db.children.get(this.childId);
       await requireChild(this.db, this.childId);
+      if (value.measuredOn < child!.birthDate)
+        throw new Error("La medida no puede ser anterior al nacimiento.");
       const measurement = { ...value, id: crypto.randomUUID(), childId: this.childId };
       await this.db.growthMeasurements.add(measurement);
       return measurement;
@@ -30,7 +33,10 @@ export class DexieGrowthMeasurementRepository implements GrowthMeasurementReposi
   async updateGrowthMeasurement(id: string, input: NewGrowthMeasurement) {
     const value = createGrowthMeasurement(input);
     return this.db.transaction("rw", this.db.children, this.db.growthMeasurements, async () => {
+      const child = await this.db.children.get(this.childId);
       await requireChild(this.db, this.childId);
+      if (value.measuredOn < child!.birthDate)
+        throw new Error("La medida no puede ser anterior al nacimiento.");
       await requireOwned(this.db.growthMeasurements, id, this.childId);
       const measurement = { ...value, id, childId: this.childId };
       await this.db.growthMeasurements.put(measurement);

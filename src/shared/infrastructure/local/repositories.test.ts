@@ -95,6 +95,26 @@ describe("integridad de los repositorios locales", () => {
     expect(await ra.listAppliedVaccineDoses()).toEqual([]);
     expect((await ra.listPlannedVaccineDoses()).some((dose) => dose.id === plan.id)).toBe(true);
   });
+
+  it("regenerates pending vaccine plans by community and preserves applied history", async () => {
+    const repo = new DexieVaccinePlanRepository(db, a.id);
+    const plan = (await repo.listPlannedVaccineDoses()).find(
+      (dose) => dose.vaccineName === "Meningococo C" && dose.ageLabel === "4 meses",
+    )!;
+    await repo.createAppliedVaccineDose({
+      ...application,
+      plannedDoseId: plan.id,
+      vaccineName: plan.vaccineName,
+      doseLabel: plan.doseLabel,
+    });
+    await children.rebuildVaccinePlans("castillaLaMancha");
+    const plans = await repo.listPlannedVaccineDoses();
+    expect(plans.some((dose) => dose.id === plan.id)).toBe(true);
+    expect(
+      plans.some((dose) => dose.vaccineName === "Meningococo ACWY" && dose.ageLabel === "4 meses"),
+    ).toBe(true);
+    expect((await new DexieSettingsRepository(db).read()).healthRegion).toBe("castillaLaMancha");
+  });
   it("serializes simultaneous vaccine application without duplicate rows", async () => {
     const repo = new DexieVaccinePlanRepository(db, a.id);
     const plan = (await repo.listPlannedVaccineDoses())[0];

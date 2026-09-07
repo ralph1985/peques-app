@@ -26,13 +26,15 @@ pnpm start
 ## Funcionalidades
 
 - Hijos: alta, edición, selector rápido y borrado confirmado con resumen y cascada transaccional.
-- Crecimiento: historial de pesos, longitud/estatura y perímetro cefálico, con gráficas OMS por sexo de peso, talla, IMC y peso para talla. El IMC y el peso para talla se derivan de medidas del mismo día; las referencias son orientativas.
-- Vacunas: planificación independiente según nacimiento, estados, edición, aplicación y reapertura. También se admiten aplicaciones fuera del plan. Calendario orientativo de Madrid 2026, con campañas por confirmar.
+- Crecimiento: historial de pesos en kg, longitud tumbado, estatura de pie y perímetro cefálico, con gráficas OMS por sexo de peso, talla, IMC y peso para talla. El IMC y el peso para talla se derivan de medidas del mismo día; las referencias son orientativas y la edad corregida puede configurarse para prematuridad.
+- Vacunas: planificación independiente según nacimiento, comunidad familiar, estados, edición, aplicación y reapertura. También se admiten aplicaciones fuera del plan. Incluye calendarios orientativos 2026 de Madrid y Castilla-La Mancha, con fuentes y campañas por confirmar.
 - Sueño: noche, siesta, registro manual, historial, resumen y cronómetro reconstruido desde timestamps persistidos.
 - Viaje familiar: categorías, ubicaciones y compartimentos, marcado, edición, borrado, reinicio y órdenes independientes por categoría y ubicación.
 - Calendario: agenda y mes con eventos derivados del hijo activo o de todos, siempre identificados.
+- Consulta: cita local, preguntas para el pediatra e informe imprimible con crecimiento, vacunas y sueño. No es una historia clínica ni una herramienta de diagnóstico.
 - Ajustes: gestión de hijos y copias completas exportables/restaurables sin subir archivos.
 - Ayuda integrada: tutorial por pantallas en la primera visita y recordatorio local de copia tras 7 días iniciales o 14 días desde la última copia.
+- Seguridad: aviso persistente de que no sirve para urgencias y acceso telefónico al 112.
 
 ## Instalar y usar sin conexión
 
@@ -46,13 +48,13 @@ El atajo `/sueno/atajo/` inicia o termina la siesta del hijo activo. `?type=noch
 
 ## Copias, privacidad y límites
 
-En Ajustes, **Exportar copia** descarga un JSON versionado con todas las tablas. **Importar copia** valida el archivo, muestra cantidades y exige escribir RESTAURAR. La restauración sustituye todos los datos dentro de una transacción: no combina dispositivos y no deja una base parcial si falla.
+En Ajustes, **Exportar copia** descarga un JSON versionado con todas las tablas. La versión actual es la 4 e incluye comunidad sanitaria, cita y preguntas de consulta. **Importar copia** valida el archivo, muestra cantidades y exige escribir RESTAURAR. La restauración sustituye todos los datos dentro de una transacción: no combina dispositivos y no deja una base parcial si falla.
 
 Conserva copias periódicas fuera del almacenamiento de la aplicación. Peques deja 7 días de margen al empezar y después avisa si nunca has preparado una copia o si han pasado más de 14 días desde la última; la fecha de «copia preparada» no demuestra que el archivo esté guardado a salvo. Las copias y IndexedDB no están cifradas por Peques: usa el bloqueo del dispositivo y protege los archivos. Esta versión limita los archivos de copia a 25 MiB por memoria móvil.
 
 No hay cuentas, backend familiar, sincronización, analítica, trackers ni logging remoto. El hosting recibe únicamente solicitudes de archivos estáticos; como cualquier hosting, puede registrar metadatos de acceso como la IP, pero Peques no le envía nombres, identificadores sanitarios ni registros familiares. No añadas scripts de analítica o inyección del proveedor al desplegar.
 
-El almacenamiento depende del navegador, del origen y del perfil. Otro navegador, dispositivo o dominio no verá estos datos. El navegador puede denegar almacenamiento o desalojarlo; ninguna PWA puede garantizar recuperación sin copia. No uses navegación privada para guardar información duradera. Las reglas de vacunas y referencias de crecimiento son orientativas, no una prescripción ni diagnóstico.
+El almacenamiento depende del navegador, del origen y del perfil. Otro navegador, dispositivo o dominio no verá estos datos. El navegador puede denegar almacenamiento o desalojarlo; ninguna PWA puede garantizar recuperación sin copia. No uses navegación privada para guardar información duradera. Las reglas de vacunas y referencias de crecimiento son orientativas, no una prescripción ni diagnóstico. Para emergencias sanitarias llama al 112.
 
 ## Arquitectura y validación
 

@@ -68,6 +68,30 @@
   padding: 9px 11px;
 }
 
+.safetyNotice {
+  display: flex;
+  width: min(100%, 560px);
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 auto 14px;
+  border-left: 3px solid #b45309;
+  background: rgba(255, 247, 237, 0.9);
+  color: #7c2d12;
+  padding: 9px 12px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.safetyNotice strong {
+  flex: 0 0 auto;
+}
+
+.safetyNotice a {
+  color: #9a3412;
+  font-weight: 900;
+  text-decoration: underline;
+}
+
 .tutorialBackdrop {
   position: fixed;
   z-index: 40;

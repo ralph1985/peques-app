@@ -47,7 +47,17 @@ export function GrowthChart({
             ? `Referencia OMS para ${whoSexLabel}. No sustituye una revisión médica.`
             : "Se muestran tus registros. Selecciona el sexo para añadir referencias OMS."}
         </p>
-        <GrowthRangeToggle range={range} onRangeChange={setRange} />
+        <GrowthRangeToggle
+          range={range}
+          maxYears={
+            indicator === "headCircumferenceForAge" ||
+            indicator === "weightForLength" ||
+            indicator === "weightForHeight"
+              ? 5
+              : 19
+          }
+          onRangeChange={setRange}
+        />
       </div>
       <div className={styles.chartCanvas} aria-label={labels[indicator]}>
         <svg viewBox={`0 0 ${series.width} ${series.height}`} role="img">
@@ -99,6 +109,10 @@ export function GrowthChart({
         <span>{labels[indicator]}</span>
         {whoSexLabel && <span>Referencia OMS para {whoSexLabel}: P3 P15 P50 P85 P97</span>}
       </div>
+      <p className={styles.chartHint}>
+        La tendencia de varias mediciones es más útil que un percentil aislado. Coméntala en la
+        revisión de salud.
+      </p>
       <div className={styles.chartMeta}>
         <span>
           Mínimo <strong>{formatValue(series.min, series.unit)}</strong>
@@ -116,31 +130,35 @@ export function GrowthChart({
 
 function GrowthRangeToggle({
   range,
+  maxYears,
   onRangeChange,
 }: {
   range: GrowthChartRange;
+  maxYears: 5 | 10 | 19;
   onRangeChange: (range: GrowthChartRange) => void;
 }) {
-  const values: Array<[GrowthChartRange, string]> = [
-    ["current", "Actual"],
-    ["twoYears", "2 años"],
-    ["fourYears", "4 años"],
-    ["tenYears", "10 años"],
-    ["nineteenYears", "19 años"],
+  const values: Array<[GrowthChartRange, string, number]> = [
+    ["current", "Actual", 0],
+    ["twoYears", "2 años", 2],
+    ["fourYears", "4 años", 4],
+    ["tenYears", "10 años", 10],
+    ["nineteenYears", "19 años", 19],
   ];
   return (
     <div className={styles.chartRangeToggle} aria-label="Rango de edad de la gráfica">
-      {values.map(([value, label]) => (
-        <button
-          aria-pressed={range === value}
-          className={range === value ? styles.chartRangeButtonActive : styles.chartRangeButton}
-          key={value}
-          onClick={() => onRangeChange(value)}
-          type="button"
-        >
-          {label}
-        </button>
-      ))}
+      {values
+        .filter(([, , years]) => years === 0 || years <= maxYears)
+        .map(([value, label]) => (
+          <button
+            aria-pressed={range === value}
+            className={range === value ? styles.chartRangeButtonActive : styles.chartRangeButton}
+            key={value}
+            onClick={() => onRangeChange(value)}
+            type="button"
+          >
+            {label}
+          </button>
+        ))}
     </div>
   );
 }

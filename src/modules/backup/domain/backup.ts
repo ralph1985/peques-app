@@ -21,7 +21,13 @@ import type {
   TravelChecklistItem,
   TravelStorageLocation,
 } from "@/modules/travel/domain/travel-checklist-item";
-import { isTutorialRoute, type AppSettings } from "@/modules/settings/domain/settings";
+import {
+  healthRegions,
+  isTutorialRoute,
+  type AppSettings,
+  type ConsultationQuestion,
+  type NextAppointment,
+} from "@/modules/settings/domain/settings";
 import {
   assert,
   isDate,
@@ -46,7 +52,7 @@ export type BackupData = {
 };
 export type PequesBackup = {
   format: "peques-backup";
-  schemaVersion: 1 | 2 | 3;
+  schemaVersion: 1 | 2 | 3 | 4;
   exportedAt: string;
   data: BackupData;
 };
@@ -116,7 +122,7 @@ function parseChild(value: unknown): Child {
   const row = record(
     value,
     ["id", "name", "birthDate", "createdAt", "updatedAt"],
-    ["birthTime", "sex", "healthId"],
+    ["birthTime", "sex", "healthId", "gestationalAgeWeeks", "gestationalAgeDays"],
   );
   assert(
     row.sex === undefined ||
@@ -133,6 +139,14 @@ function parseChild(value: unknown): Child {
     row.healthId === undefined || typeof row.healthId === "string",
     "Identificador sanitario no válido.",
   );
+  assert(
+    row.gestationalAgeWeeks === undefined || typeof row.gestationalAgeWeeks === "number",
+    "Semanas de gestación no válidas.",
+  );
+  assert(
+    row.gestationalAgeDays === undefined || typeof row.gestationalAgeDays === "number",
+    "Días de gestación no válidos.",
+  );
   return {
     ...validateChild({
       name: text(row.name, "Nombre", 80),
@@ -140,6 +154,8 @@ function parseChild(value: unknown): Child {
       birthTime: row.birthTime,
       sex: row.sex,
       healthId: row.healthId,
+      gestationalAgeWeeks: row.gestationalAgeWeeks as number | undefined,
+      gestationalAgeDays: row.gestationalAgeDays as number | undefined,
     }),
     id: uuid(row.id),
     createdAt: timestamp(row.createdAt),
@@ -161,16 +177,25 @@ function parseWeight(value: unknown): WeightEntry {
   };
 }
 function parseGrowthMeasurement(value: unknown): GrowthMeasurement {
-  const row = record(value, ["id", "childId", "measuredOn", "kind", "valueMillimeters"], ["notes"]);
+  const row = record(
+    value,
+    ["id", "childId", "measuredOn", "kind", "valueMillimeters"],
+    ["notes", "position"],
+  );
   assert(
     typeof row.kind === "string" && growthMeasurementKinds.includes(row.kind as never),
     "Tipo de medida de crecimiento no válido.",
   );
   assert(typeof row.valueMillimeters === "number", "Valor de crecimiento no válido.");
+  assert(
+    row.position === undefined || row.position === "length" || row.position === "height",
+    "Forma de medir no válida.",
+  );
   return {
     ...createGrowthMeasurement({
       measuredOn: date(row.measuredOn),
       kind: row.kind as GrowthMeasurement["kind"],
+      position: row.position as GrowthMeasurement["position"],
       valueMillimeters: row.valueMillimeters,
       notes: nullableText(row.notes),
     }),
@@ -298,6 +323,9 @@ function parseSettings(
     [
       "tutorialSeenRoutes",
       "tutorialReplayRequested",
+      "healthRegion",
+      "nextAppointment",
+      "consultationQuestions",
       ...(requireFirstUsedAt ? [] : ["firstUsedAt"]),
     ],
   );
@@ -319,6 +347,13 @@ function parseSettings(
   assert(typeof tutorialReplayRequested === "boolean", "Estado del tutorial no válido.");
   const firstUsedAt =
     row.firstUsedAt === undefined ? legacyFirstUsedAt : timestamp(row.firstUsedAt);
+  const healthRegion = row.healthRegion ?? "madrid";
+  assert(
+    healthRegions.includes(healthRegion as (typeof healthRegions)[number]),
+    "Comunidad sanitaria no válida.",
+  );
+  const nextAppointment = parseAppointment(row.nextAppointment);
+  const consultationQuestions = parseConsultationQuestions(row.consultationQuestions);
   return {
     id: "main",
     firstUsedAt,
@@ -329,7 +364,35 @@ function parseSettings(
     travelView: row.travelView,
     vaccineView: row.vaccineView,
     calendarAllChildren: boolean(row.calendarAllChildren),
+    healthRegion: healthRegion as AppSettings["healthRegion"],
+    nextAppointment,
+    consultationQuestions,
   };
+}
+
+function parseAppointment(value: unknown): NextAppointment | null {
+  if (value === undefined || value === null) return null;
+  const row = record(value, ["date", "title", "place", "notes"]);
+  return {
+    date: date(row.date),
+    title: text(row.title, "Título de la cita", 160),
+    place: text(row.place, "Lugar de la cita", 160),
+    notes: nullableText(row.notes),
+  };
+}
+
+function parseConsultationQuestions(value: unknown): ConsultationQuestion[] {
+  if (value === undefined) return [];
+  assert(Array.isArray(value), "Las preguntas de consulta no son válidas.");
+  return value.map((item) => {
+    const row = record(item, ["id", "text", "createdAt", "completed"]);
+    return {
+      id: uuid(row.id),
+      text: text(row.text, "Pregunta", 4000),
+      createdAt: timestamp(row.createdAt),
+      completed: boolean(row.completed),
+    };
+  });
 }
 function array<T>(value: unknown, parse: (row: unknown) => T): T[] {
   assert(Array.isArray(value), "Una tabla de la copia no es una lista.");
@@ -340,12 +403,16 @@ export function validateBackup(value: unknown): PequesBackup {
   const root = record(value, ["format", "schemaVersion", "exportedAt", "data"]);
   assert(root.format === "peques-backup", "El archivo no es una copia de Peques.");
   assert(
-    root.schemaVersion === 1 || root.schemaVersion === 2 || root.schemaVersion === 3,
+    root.schemaVersion === 1 ||
+      root.schemaVersion === 2 ||
+      root.schemaVersion === 3 ||
+      root.schemaVersion === 4,
     "Esta versión de copia no es compatible con Peques.",
   );
+  const schemaVersion = root.schemaVersion as 1 | 2 | 3 | 4;
   const exportedAt = timestamp(root.exportedAt);
   const requiredTables =
-    root.schemaVersion === 1
+    schemaVersion === 1
       ? backupTables.filter((name) => name !== "growthMeasurements")
       : backupTables;
   const raw = record(root.data, requiredTables);
@@ -353,16 +420,14 @@ export function validateBackup(value: unknown): PequesBackup {
     children: array(raw.children, parseChild),
     weightEntries: array(raw.weightEntries, parseWeight),
     growthMeasurements:
-      root.schemaVersion === 1 ? [] : array(raw.growthMeasurements, parseGrowthMeasurement),
+      schemaVersion === 1 ? [] : array(raw.growthMeasurements, parseGrowthMeasurement),
     plannedVaccineDoses: array(raw.plannedVaccineDoses, parsePlanned),
     appliedVaccineDoses: array(raw.appliedVaccineDoses, parseApplied),
     sleepEntries: array(raw.sleepEntries, parseSleep),
     travelChecklistCategories: array(raw.travelChecklistCategories, parseCategory),
     travelChecklistItems: array(raw.travelChecklistItems, parseItem),
     travelStorageLocations: array(raw.travelStorageLocations, parseLocation),
-    settings: array(raw.settings, (value) =>
-      parseSettings(value, exportedAt, root.schemaVersion === 3),
-    ),
+    settings: array(raw.settings, (value) => parseSettings(value, exportedAt, schemaVersion >= 3)),
   };
   const ids = new Set<string>();
   for (const name of backupTables.filter((name) => name !== "settings")) {
@@ -424,7 +489,7 @@ export function validateBackup(value: unknown): PequesBackup {
   );
   return {
     format: "peques-backup",
-    schemaVersion: root.schemaVersion,
+    schemaVersion,
     exportedAt,
     data,
   };
