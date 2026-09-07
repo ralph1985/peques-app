@@ -144,7 +144,7 @@ test("mobile flows persist through browser restart and entirely offline CRUD", a
   );
   await expect(
     page.getByRole("complementary", { name: "Recordatorio de copia de seguridad" }),
-  ).toBeVisible();
+  ).toHaveCount(0);
   await expect(page.getByText("Lista para abrir sin conexión", { exact: true })).toBeVisible();
   await page.getByRole("navigation").getByRole("link", { name: "Peso", exact: true }).click();
   await addWeight(page, "6100");
@@ -384,7 +384,7 @@ test("vaccines, travel, strong child deletion and local backup restoration", asy
   const download = await downloadPromise;
   const contents = await readFile((await download.path())!, "utf8");
   const backup = JSON.parse(contents) as PequesBackup;
-  expect(backup).toMatchObject({ format: "peques-backup", schemaVersion: 2 });
+  expect(backup).toMatchObject({ format: "peques-backup", schemaVersion: 3 });
   expect(backup.data.children).toHaveLength(1);
   expect(backup.data.weightEntries).toHaveLength(1);
   expect(backup.data.plannedVaccineDoses).toHaveLength(22);

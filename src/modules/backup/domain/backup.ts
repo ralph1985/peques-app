@@ -46,7 +46,7 @@ export type BackupData = {
 };
 export type PequesBackup = {
   format: "peques-backup";
-  schemaVersion: 1 | 2;
+  schemaVersion: 1 | 2 | 3;
   exportedAt: string;
   data: BackupData;
 };
@@ -279,11 +279,27 @@ function parseItem(value: unknown): TravelChecklistItem {
     storageSortOrder: row.storageSortOrder == null ? null : order(row.storageSortOrder),
   };
 }
-function parseSettings(value: unknown): AppSettings {
+function parseSettings(
+  value: unknown,
+  legacyFirstUsedAt: string,
+  requireFirstUsedAt: boolean,
+): AppSettings {
   const row = record(
     value,
-    ["id", "activeChildId", "lastExportedAt", "travelView", "vaccineView", "calendarAllChildren"],
-    ["tutorialSeenRoutes", "tutorialReplayRequested"],
+    [
+      "id",
+      "activeChildId",
+      "lastExportedAt",
+      "travelView",
+      "vaccineView",
+      "calendarAllChildren",
+      ...(requireFirstUsedAt ? ["firstUsedAt"] : []),
+    ],
+    [
+      "tutorialSeenRoutes",
+      "tutorialReplayRequested",
+      ...(requireFirstUsedAt ? [] : ["firstUsedAt"]),
+    ],
   );
   assert(row.id === "main", "Identificador de configuración no válido.");
   assert(
@@ -301,8 +317,11 @@ function parseSettings(value: unknown): AppSettings {
   );
   const tutorialReplayRequested = row.tutorialReplayRequested ?? false;
   assert(typeof tutorialReplayRequested === "boolean", "Estado del tutorial no válido.");
+  const firstUsedAt =
+    row.firstUsedAt === undefined ? legacyFirstUsedAt : timestamp(row.firstUsedAt);
   return {
     id: "main",
+    firstUsedAt,
     activeChildId: nullableUuid(row.activeChildId),
     lastExportedAt: row.lastExportedAt === null ? null : timestamp(row.lastExportedAt),
     tutorialSeenRoutes: [...new Set(tutorialSeenRoutes)],
@@ -321,9 +340,10 @@ export function validateBackup(value: unknown): PequesBackup {
   const root = record(value, ["format", "schemaVersion", "exportedAt", "data"]);
   assert(root.format === "peques-backup", "El archivo no es una copia de Peques.");
   assert(
-    root.schemaVersion === 1 || root.schemaVersion === 2,
+    root.schemaVersion === 1 || root.schemaVersion === 2 || root.schemaVersion === 3,
     "Esta versión de copia no es compatible con Peques.",
   );
+  const exportedAt = timestamp(root.exportedAt);
   const requiredTables =
     root.schemaVersion === 1
       ? backupTables.filter((name) => name !== "growthMeasurements")
@@ -340,7 +360,9 @@ export function validateBackup(value: unknown): PequesBackup {
     travelChecklistCategories: array(raw.travelChecklistCategories, parseCategory),
     travelChecklistItems: array(raw.travelChecklistItems, parseItem),
     travelStorageLocations: array(raw.travelStorageLocations, parseLocation),
-    settings: array(raw.settings, parseSettings),
+    settings: array(raw.settings, (value) =>
+      parseSettings(value, exportedAt, root.schemaVersion === 3),
+    ),
   };
   const ids = new Set<string>();
   for (const name of backupTables.filter((name) => name !== "settings")) {
@@ -403,7 +425,7 @@ export function validateBackup(value: unknown): PequesBackup {
   return {
     format: "peques-backup",
     schemaVersion: root.schemaVersion,
-    exportedAt: timestamp(root.exportedAt),
+    exportedAt,
     data,
   };
 }

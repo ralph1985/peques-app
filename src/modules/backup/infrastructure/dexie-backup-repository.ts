@@ -8,7 +8,7 @@ export class DexieBackupRepository implements BackupRepository {
     return this.db.transaction("r", this.db.tables, async () =>
       validateBackup({
         format: "peques-backup",
-        schemaVersion: 2,
+        schemaVersion: 3,
         exportedAt: new Date().toISOString(),
         data: {
           children: await this.db.children.toArray(),

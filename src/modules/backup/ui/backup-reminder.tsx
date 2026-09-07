@@ -7,7 +7,10 @@ import styles from "@/app/(app)/_components/app-shell.module.css";
 
 export function BackupReminder() {
   const { family } = usePeques();
-  const status = getBackupReminderStatus(family.settings.lastExportedAt);
+  const status = getBackupReminderStatus(
+    family.settings.lastExportedAt,
+    family.settings.firstUsedAt,
+  );
   if (status === "current") return null;
 
   const days = getDaysSinceBackup(family.settings.lastExportedAt);

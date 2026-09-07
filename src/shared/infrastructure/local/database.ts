@@ -12,7 +12,7 @@ import type {
   TravelChecklistItem,
   TravelStorageLocation,
 } from "@/modules/travel/domain/travel-checklist-item";
-import { defaultSettings, type AppSettings } from "@/modules/settings/domain/settings";
+import { createDefaultSettings, type AppSettings } from "@/modules/settings/domain/settings";
 
 export class PequesDatabase extends Dexie {
   children!: Table<Child, string>;
@@ -53,8 +53,31 @@ export class PequesDatabase extends Dexie {
       travelStorageLocations: "id, parentId, sortOrder",
       settings: "id",
     });
+    this.version(3)
+      .stores({
+        children: "id, createdAt",
+        weightEntries: "id, childId, [childId+measuredOn]",
+        growthMeasurements: "id, childId, [childId+measuredOn]",
+        plannedVaccineDoses: "id, childId, [childId+plannedDate]",
+        appliedVaccineDoses: "id, childId, &plannedDoseId, [childId+appliedOn]",
+        sleepEntries: "id, childId, [childId+startedAt]",
+        travelChecklistCategories: "slug, sortOrder",
+        travelChecklistItems:
+          "id, category, storageLocationId, [category+sortOrder], [storageLocationId+storageSortOrder]",
+        travelStorageLocations: "id, parentId, sortOrder",
+        settings: "id",
+      })
+      .upgrade((transaction) => {
+        const firstUsedAt = new Date().toISOString();
+        return transaction
+          .table<AppSettings, string>("settings")
+          .toCollection()
+          .modify((settings) => {
+            settings.firstUsedAt ??= firstUsedAt;
+          });
+      });
     this.on("populate", async () => {
-      await this.settings.add({ ...defaultSettings });
+      await this.settings.add(createDefaultSettings());
       await this.travelChecklistCategories.bulkAdd(
         ["Alimentación", "Higiene", "Ropa", "Descanso", "Salud", "Paseo", "Documentación"].map(
           (label, index) => ({ slug: crypto.randomUUID(), label, sortOrder: index * 10 }),

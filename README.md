@@ -32,7 +32,7 @@ pnpm start
 - Viaje familiar: categorías, ubicaciones y compartimentos, marcado, edición, borrado, reinicio y órdenes independientes por categoría y ubicación.
 - Calendario: agenda y mes con eventos derivados del hijo activo o de todos, siempre identificados.
 - Ajustes: gestión de hijos y copias completas exportables/restaurables sin subir archivos.
-- Ayuda integrada: tutorial por pantallas en la primera visita y recordatorio local de copia tras 14 días.
+- Ayuda integrada: tutorial por pantallas en la primera visita y recordatorio local de copia tras 7 días iniciales o 14 días desde la última copia.
 
 ## Instalar y usar sin conexión
 
@@ -48,7 +48,7 @@ El atajo `/sueno/atajo/` inicia o termina la siesta del hijo activo. `?type=noch
 
 En Ajustes, **Exportar copia** descarga un JSON versionado con todas las tablas. **Importar copia** valida el archivo, muestra cantidades y exige escribir RESTAURAR. La restauración sustituye todos los datos dentro de una transacción: no combina dispositivos y no deja una base parcial si falla.
 
-Conserva copias periódicas fuera del almacenamiento de la aplicación. Peques avisa si nunca has preparado una copia o si han pasado más de 14 días desde la última; la fecha de «copia preparada» no demuestra que el archivo esté guardado a salvo. Las copias y IndexedDB no están cifradas por Peques: usa el bloqueo del dispositivo y protege los archivos. Esta versión limita los archivos de copia a 25 MiB por memoria móvil.
+Conserva copias periódicas fuera del almacenamiento de la aplicación. Peques deja 7 días de margen al empezar y después avisa si nunca has preparado una copia o si han pasado más de 14 días desde la última; la fecha de «copia preparada» no demuestra que el archivo esté guardado a salvo. Las copias y IndexedDB no están cifradas por Peques: usa el bloqueo del dispositivo y protege los archivos. Esta versión limita los archivos de copia a 25 MiB por memoria móvil.
 
 No hay cuentas, backend familiar, sincronización, analítica, trackers ni logging remoto. El hosting recibe únicamente solicitudes de archivos estáticos; como cualquier hosting, puede registrar metadatos de acceso como la IP, pero Peques no le envía nombres, identificadores sanitarios ni registros familiares. No añadas scripts de analítica o inyección del proveedor al desplegar.
 

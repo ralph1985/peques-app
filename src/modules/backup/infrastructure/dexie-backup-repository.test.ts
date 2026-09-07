@@ -106,6 +106,7 @@ describe("copia completa y restauración atómica", () => {
     const legacy = structuredClone(backup);
     legacy.schemaVersion = 1;
     Reflect.deleteProperty(legacy.data, "growthMeasurements");
+    Reflect.deleteProperty(legacy.data.settings[0], "firstUsedAt");
     Reflect.deleteProperty(legacy.data.settings[0], "tutorialSeenRoutes");
     Reflect.deleteProperty(legacy.data.settings[0], "tutorialReplayRequested");
 
@@ -113,6 +114,7 @@ describe("copia completa y restauración atómica", () => {
 
     expect(parsed.schemaVersion).toBe(1);
     expect(parsed.data.growthMeasurements).toEqual([]);
+    expect(parsed.data.settings[0].firstUsedAt).toBe(backup.exportedAt);
     expect(parsed.data.settings[0].tutorialSeenRoutes).toEqual([]);
     expect(parsed.data.settings[0].tutorialReplayRequested).toBe(false);
   });
@@ -148,7 +150,7 @@ describe("copia completa y restauración atómica", () => {
     [
       "future version",
       (value) => {
-        Object.assign(value, { schemaVersion: 3 });
+        Object.assign(value, { schemaVersion: 4 });
       },
     ],
     [

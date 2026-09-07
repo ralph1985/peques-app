@@ -16,6 +16,7 @@ export function isTutorialRoute(value: unknown): value is TutorialRoute {
 
 export type AppSettings = {
   id: "main";
+  firstUsedAt: string;
   activeChildId: string | null;
   lastExportedAt: string | null;
   tutorialSeenRoutes: TutorialRoute[];
@@ -25,13 +26,16 @@ export type AppSettings = {
   calendarAllChildren: boolean;
 };
 
-export const defaultSettings: AppSettings = {
-  id: "main",
-  activeChildId: null,
-  lastExportedAt: null,
-  tutorialSeenRoutes: [],
-  tutorialReplayRequested: false,
-  travelView: "prepare",
-  vaccineView: "status",
-  calendarAllChildren: false,
-};
+export function createDefaultSettings(firstUsedAt = new Date().toISOString()): AppSettings {
+  return {
+    id: "main",
+    firstUsedAt,
+    activeChildId: null,
+    lastExportedAt: null,
+    tutorialSeenRoutes: [],
+    tutorialReplayRequested: false,
+    travelView: "prepare",
+    vaccineView: "status",
+    calendarAllChildren: false,
+  };
+}
