@@ -13,7 +13,7 @@
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
-  padding: 24px 18px max(154px, calc(140px + env(safe-area-inset-bottom, 0px)));
+  padding: 24px 18px max(124px, calc(110px + env(safe-area-inset-bottom, 0px)));
 }
 
 .view {
@@ -253,25 +253,47 @@
 }
 
 .credit {
-  margin: 18px auto 0;
-  max-width: 100%;
+  display: grid;
+  width: min(100%, 560px);
+  justify-items: center;
+  gap: 9px;
+  margin: 28px auto 0;
+  border-top: 1px solid rgba(124, 58, 237, 0.14);
+  padding-top: 22px;
   color: #806b90;
-  font-size: 11px;
-  line-height: 1.4;
+  font-size: 12px;
+  line-height: 1.45;
   text-align: center;
   overflow-wrap: anywhere;
 }
 
-.credit a {
-  color: #604873;
-  font-weight: 800;
-  text-decoration: underline;
-  text-decoration-color: rgba(124, 58, 237, 0.28);
-  text-underline-offset: 0.2em;
+.creditLogo {
+  display: block;
+  width: min(176px, 52vw);
+  border-radius: 10px;
+  padding: 5px;
+  transition:
+    background-color 160ms ease,
+    transform 160ms ease;
 }
 
-.credit a:hover {
-  text-decoration-color: currentColor;
+.creditLogo img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.creditLogo:hover {
+  background: rgba(124, 58, 237, 0.06);
+  transform: translateY(-1px);
+}
+
+.creditLogo:focus-visible {
+  outline-offset: 5px;
+}
+
+.credit p {
+  max-width: 34ch;
 }
 
 @media (min-width: 620px) {

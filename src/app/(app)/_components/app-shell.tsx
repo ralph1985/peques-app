@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion, type Variants } from "motion/react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
@@ -141,10 +142,23 @@ export function AppShell({ children }: { children: ReactNode }) {
         ))}
       </nav>
       <footer className={styles.credit}>
-        Peques · Solo en tu dispositivo · Hecha por{" "}
-        <a href="https://conquense.dev" rel="noreferrer" target="_blank">
-          Conquense.dev
+        <a
+          aria-label="Conquense.dev"
+          className={styles.creditLogo}
+          href="https://conquense.dev"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <Image
+            alt="Conquense.dev"
+            height={407}
+            loading="lazy"
+            src="/brand/conquense-dev-logo-dark.webp"
+            unoptimized
+            width={1200}
+          />
         </a>
+        <p>Peques guarda tus datos solo en este dispositivo.</p>
       </footer>
       <AppTutorial />
     </div>

@@ -142,6 +142,7 @@ test("mobile flows persist through browser restart and entirely offline CRUD", a
     "href",
     "https://conquense.dev",
   );
+  await expect(page.getByRole("img", { name: "Conquense.dev", exact: true })).toBeVisible();
   await expect(
     page.getByRole("complementary", { name: "Recordatorio de copia de seguridad" }),
   ).toHaveCount(0);
