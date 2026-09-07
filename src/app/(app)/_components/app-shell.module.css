@@ -24,6 +24,8 @@
 
 .viewLayer {
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .backupReminder {
@@ -38,6 +40,10 @@
   background: #fff7ed;
   color: #7c2d12;
   padding: 12px 14px;
+}
+
+.backupReminder > div {
+  min-width: 0;
 }
 
 .backupReminder strong {
@@ -237,19 +243,23 @@
 }
 
 .navLabel {
-  white-space: nowrap;
+  max-width: 100%;
   font-size: 10px;
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1;
+  overflow-wrap: anywhere;
+  text-align: center;
 }
 
 .credit {
   margin: 18px auto 0;
+  max-width: 100%;
   color: #806b90;
   font-size: 11px;
   line-height: 1.4;
   text-align: center;
+  overflow-wrap: anywhere;
 }
 
 .credit a {

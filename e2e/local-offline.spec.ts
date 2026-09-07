@@ -26,6 +26,50 @@ async function skipTutorial(page: Page) {
   await page.getByRole("button", { name: "Saltar tutorial", exact: true }).click();
 }
 
+async function dismissTutorialIfPresent(page: Page) {
+  const skipButton = page.getByRole("button", { name: "Saltar tutorial", exact: true });
+  if (await skipButton.isVisible().catch(() => false)) {
+    await skipButton.click();
+  }
+}
+
+async function expectNoVisibleHorizontalOverflow(page: Page) {
+  const result = await page.evaluate(() => {
+    const viewportWidth = window.innerWidth;
+    const offenders = [...document.querySelectorAll<HTMLElement>("body *")]
+      .filter((element) => {
+        const style = window.getComputedStyle(element);
+        const rect = element.getBoundingClientRect();
+        return (
+          style.display !== "none" &&
+          style.visibility !== "hidden" &&
+          rect.width > 0 &&
+          rect.height > 0 &&
+          !element.closest(".chartRangeToggle") &&
+          (rect.left < -1 || rect.right > viewportWidth + 1)
+        );
+      })
+      .slice(0, 8)
+      .map((element) => ({
+        className: element.className,
+        left: Math.round(element.getBoundingClientRect().left),
+        right: Math.round(element.getBoundingClientRect().right),
+        text: element.textContent?.trim().slice(0, 80),
+      }));
+    return {
+      bodyScrollWidth: document.body.scrollWidth,
+      documentScrollWidth: document.documentElement.scrollWidth,
+      offenders,
+      viewportWidth,
+    };
+  });
+  expect(result, JSON.stringify(result, null, 2)).toMatchObject({
+    bodyScrollWidth: result.viewportWidth,
+    documentScrollWidth: result.viewportWidth,
+    offenders: [],
+  });
+}
+
 test("mobile flows persist through browser restart and entirely offline CRUD", async ({}, testInfo) => {
   const profile = testInfo.outputPath("synthetic-browser-profile");
   let context = await chromium.launchPersistentContext(profile, {
@@ -187,6 +231,39 @@ test("mobile flows persist through browser restart and entirely offline CRUD", a
   expect(JSON.stringify(requests)).not.toContain("Peque");
   expect(errors).toEqual([]);
   await context.close();
+});
+
+test("long text stays inside narrow responsive layouts", async ({ page }) => {
+  const longName = "Peque con un nombre familiar extraordinariamente largo para probar el diseño";
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  await createChild(page, longName, "female");
+  await skipTutorial(page);
+
+  await page.goto("/viaje/");
+  await dismissTutorialIfPresent(page);
+  const longItem =
+    "Elemento de viaje con una descripción suficientemente larga para probar el contenedor";
+  await page.getByRole("button", { name: "Añadir a la lista", exact: true }).click();
+  await page.getByRole("dialog").getByLabel("Elemento", { exact: true }).fill(longItem);
+  await page.getByRole("dialog").getByRole("button", { name: "Añadir elemento" }).click();
+
+  for (const width of [320, 390, 768]) {
+    await page.setViewportSize({ width, height: 844 });
+    for (const route of [
+      "/",
+      "/peso/",
+      "/vacunas/",
+      "/sueno/",
+      "/viaje/",
+      "/calendario/",
+      "/ajustes/",
+    ]) {
+      await page.goto(route);
+      await dismissTutorialIfPresent(page);
+      await expectNoVisibleHorizontalOverflow(page);
+    }
+  }
 });
 
 test("vaccines, travel, strong child deletion and local backup restoration", async ({

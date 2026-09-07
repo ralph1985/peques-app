@@ -1,5 +1,8 @@
 .counter {
-  display: inline-grid;
+  display: grid;
+  align-self: stretch;
+  width: 100%;
+  min-width: 0;
   max-width: 100%;
   color: #4c1d95;
   font-variant-numeric: tabular-nums;
@@ -8,12 +11,18 @@
 
 .unitRows {
   display: grid;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   gap: 8px;
 }
 
 .primaryUnits,
 .secondaryUnits {
   display: grid;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   gap: 8px;
 }
 

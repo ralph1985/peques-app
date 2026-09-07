@@ -1,6 +1,7 @@
 .main {
   display: grid;
   width: 100%;
+  min-width: 0;
   max-width: 560px;
   margin: 0 auto;
   gap: 18px;
@@ -32,10 +33,14 @@
   background: rgba(255, 255, 255, 0.84);
   box-shadow: 0 16px 44px rgba(76, 29, 149, 0.08);
   padding: 16px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .sectionTitle {
   display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
@@ -43,12 +48,15 @@
 
 .sectionTitle h2 {
   font-size: 20px;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .sectionTitle span {
   color: #6b587c;
   font-size: 13px;
   font-weight: 700;
+  overflow-wrap: anywhere;
 }
 
 .copy {
@@ -167,6 +175,8 @@
 
 .statusTitle {
   display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
@@ -174,6 +184,8 @@
 
 .statusTitle h3 {
   font-size: 16px;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .statusTitle span {
@@ -245,6 +257,7 @@
 .doseSummary time {
   flex: 0 0 auto;
   text-align: right;
+  overflow-wrap: anywhere;
 }
 
 .dateStack {
@@ -302,6 +315,8 @@
 
 .doseActions {
   display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 8px;
 }
