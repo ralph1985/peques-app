@@ -37,6 +37,16 @@ textarea {
 button {
   cursor: pointer;
 }
+.action-icon {
+  display: inline-block;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+  vertical-align: -0.16em;
+}
 button:disabled {
   cursor: wait;
   opacity: 0.65;
@@ -101,6 +111,10 @@ button:disabled {
   overflow-wrap: anywhere;
 }
 .primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   border: 1px solid #7c3aed;
   border-radius: 12px;
   background: #7c3aed;
@@ -323,6 +337,10 @@ button:active {
 }
 .row-actions button,
 .text-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
   border: 0;
   background: #f4ecfb;
   color: #5b21b6;

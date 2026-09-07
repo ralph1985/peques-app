@@ -10,6 +10,7 @@ import {
 } from "@/modules/calendar/domain/calendar-event";
 import { formatCalendarDayHeading, formatCalendarEventDate } from "./calendar-date-format";
 import styles from "./calendar-view.module.css";
+import { ActionIcon } from "@/shared/ui/action-icon";
 
 type CalendarViewProps = {
   events: CalendarEvent[];
@@ -67,7 +68,8 @@ export function CalendarView({ events, onOpen }: CalendarViewProps) {
               onClick={() => setPastEventsVisible((current) => current + 3)}
               type="button"
             >
-              Ver {Math.min(3, remainingPastEvents)} eventos anteriores
+              <ActionIcon name="archive" size={16} /> Ver {Math.min(3, remainingPastEvents)} eventos
+              anteriores
             </button>
           ) : null}
         </div>
@@ -123,7 +125,7 @@ export function CalendarView({ events, onOpen }: CalendarViewProps) {
                 type="button"
                 onClick={() => void onOpen(selectedEvent)}
               >
-                Ir al registro
+                <ActionIcon name="arrow-right" size={18} /> Ir al registro
               </button>
             ) : null}
           </div>
@@ -212,16 +214,26 @@ function MonthCalendar({
   return (
     <div className={styles.monthView}>
       <div className={styles.monthHeader} data-tutorial-target="calendar-month">
-        <button aria-label="Mes anterior" onClick={() => moveMonth(-1)} type="button">
-          ‹
+        <button
+          aria-label="Mes anterior"
+          title="Mes anterior"
+          onClick={() => moveMonth(-1)}
+          type="button"
+        >
+          <ActionIcon name="arrow-left" />
         </button>
         <h2>
           {new Intl.DateTimeFormat("es-ES", { month: "long", year: "numeric" }).format(
             new Date(year, month, 1),
           )}
         </h2>
-        <button aria-label="Mes siguiente" onClick={() => moveMonth(1)} type="button">
-          ›
+        <button
+          aria-label="Mes siguiente"
+          title="Mes siguiente"
+          onClick={() => moveMonth(1)}
+          type="button"
+        >
+          <ActionIcon name="arrow-right" />
         </button>
       </div>
       <div className={styles.weekdays} aria-hidden="true">

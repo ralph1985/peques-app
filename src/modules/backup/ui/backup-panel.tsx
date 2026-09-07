@@ -6,6 +6,7 @@ import { LoadingButton } from "@/shared/ui/pending-submit-button";
 import { maxBackupBytes, parseBackup, summarizeBackup, type PequesBackup } from "../domain/backup";
 import { assert } from "@/shared/domain/validation";
 import ui from "@/shared/ui/local-form.module.css";
+import { ActionIcon } from "@/shared/ui/action-icon";
 
 export function BackupExportButton() {
   const { app } = usePeques();
@@ -44,7 +45,7 @@ export function BackupExportButton() {
         onClick={() => void download()}
         pending={pending}
       >
-        Exportar copia
+        <ActionIcon name="download" size={18} /> Exportar copia
       </LoadingButton>
       {message && <p role="status">{message}</p>}
     </div>

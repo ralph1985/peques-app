@@ -375,6 +375,28 @@
   font-weight: 800;
 }
 
+.iconButton,
+.deleteIconButton {
+  display: grid;
+  width: 36px;
+  min-height: 36px;
+  place-items: center;
+  border: 1px solid rgba(124, 58, 237, 0.18);
+  border-radius: 12px;
+  padding: 0;
+}
+
+.iconButton {
+  background: #f3e8ff;
+  color: #5b21b6;
+}
+
+.deleteIconButton {
+  border-color: rgba(153, 27, 27, 0.16);
+  background: #fef2f2;
+  color: #991b1b;
+}
+
 .full {
   grid-column: 1 / -1;
 }

@@ -3,6 +3,7 @@
 import { useRef, useState, type FormEvent, type ReactNode } from "react";
 import { LoadingButton } from "./pending-submit-button";
 import styles from "./local-form.module.css";
+import { ActionIcon } from "./action-icon";
 
 export function errorMessage(error: unknown): string {
   if (
@@ -31,6 +32,7 @@ export function LocalForm({
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const submitting = useRef(false);
+  const submitIcon = /borrar|eliminar|quitar/i.test(submitLabel) ? "trash" : "check";
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (submitting.current) return;
@@ -61,10 +63,11 @@ export function LocalForm({
       <div className={styles.actions}>
         {onCancel && (
           <button type="button" onClick={onCancel} disabled={pending} className={styles.secondary}>
-            Cancelar
+            <ActionIcon name="x" size={17} /> Cancelar
           </button>
         )}
         <LoadingButton type="submit" pending={pending} className={styles.primary}>
+          <ActionIcon name={submitIcon} size={17} />
           {submitLabel}
         </LoadingButton>
       </div>

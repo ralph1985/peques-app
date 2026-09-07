@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import type { CSSProperties, KeyboardEvent as ReactKeyboardEvent } from "react";
 import type { PequesApp } from "@/shared/application/peques-app";
 import { usePeques } from "./app-context";
+import { ActionIcon } from "./action-icon";
 import {
   isTutorialRoute,
   tutorialRoutes,
@@ -471,7 +472,7 @@ function TutorialGuide({
             onClick={() => setStepIndex((current) => Math.max(0, current - 1))}
             type="button"
           >
-            Atrás
+            <ActionIcon name="arrow-left" size={17} /> Atrás
           </button>
           <button
             className={styles.tutorialPrimary}
@@ -480,6 +481,7 @@ function TutorialGuide({
             ref={primaryRef}
             type="button"
           >
+            <ActionIcon name="arrow-right" size={17} />
             {pending ? "Guardando…" : isLastStep ? "Terminar" : "Siguiente"}
           </button>
         </div>
@@ -490,7 +492,7 @@ function TutorialGuide({
             onClick={onDismiss}
             type="button"
           >
-            Ahora no
+            <ActionIcon name="x" size={17} /> Ahora no
           </button>
           <button
             className={styles.tutorialSkip}
@@ -498,7 +500,7 @@ function TutorialGuide({
             onClick={() => void skipTutorial()}
             type="button"
           >
-            Saltar tutorial
+            <ActionIcon name="arrow-right" size={17} /> Saltar tutorial
           </button>
         </div>
       </section>
@@ -551,6 +553,7 @@ export function TutorialRestartButton() {
         onClick={() => void restart()}
         type="button"
       >
+        <ActionIcon name="refresh" size={18} />
         {pending ? "Preparando tutorial…" : "Ver tutorial de nuevo"}
       </button>
       {error && <p role="alert">{error}</p>}

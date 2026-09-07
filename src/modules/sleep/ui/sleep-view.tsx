@@ -6,6 +6,7 @@ import { BottomSheet } from "@/shared/ui/bottom-sheet";
 import { LoadingButton } from "@/shared/ui/pending-submit-button";
 import type { SleepEntry } from "../domain/sleep-entry";
 import styles from "@/app/(app)/sueno/page.module.css";
+import { ActionIcon } from "@/shared/ui/action-icon";
 
 type SleepAction = (formData: FormData) => void | Promise<void>;
 
@@ -108,14 +109,14 @@ export function SleepView({
                 onClick={() => setSheetState({ entry: activeEntry, mode: "edit-start" })}
                 type="button"
               >
-                Editar inicio
+                <ActionIcon name="edit" size={18} /> Editar inicio
               </button>
               <button
                 className={styles.secondaryButton}
                 onClick={() => setSheetState({ entry: activeEntry, mode: "finish" })}
                 type="button"
               >
-                Finalizar sueño
+                <ActionIcon name="stop" size={18} /> Finalizar sueño
               </button>
             </div>
           </div>
@@ -155,7 +156,7 @@ export function SleepView({
           onClick={() => setSheetState({ mode: "manual" })}
           type="button"
         >
-          Añadir descanso manualmente
+          <ActionIcon name="plus" size={17} /> Añadir descanso manualmente
         </button>
       </section>
 
@@ -218,6 +219,7 @@ export function SleepView({
                           aria-label={`Editar ${entry.kind === "nap" ? "siesta" : "noche"} de ${formatDay(entry.startedAt)}`}
                           className={styles.iconButton}
                           onClick={() => setSheetState({ entry, mode: "edit" })}
+                          title={`Editar ${entry.kind === "nap" ? "siesta" : "noche"} de ${formatDay(entry.startedAt)}`}
                           type="button"
                         >
                           <EditIcon />
@@ -226,6 +228,7 @@ export function SleepView({
                           aria-label={`Borrar ${entry.kind === "nap" ? "siesta" : "noche"} de ${formatDay(entry.startedAt)}`}
                           className={`${styles.iconButton} ${styles.deleteButton}`}
                           onClick={() => setSheetState({ entry, mode: "delete" })}
+                          title={`Borrar ${entry.kind === "nap" ? "siesta" : "noche"} de ${formatDay(entry.startedAt)}`}
                           type="button"
                         >
                           <TrashIcon />
@@ -367,7 +370,7 @@ function SleepSheets({
             onClick={onClose}
             type="button"
           >
-            Cancelar
+            <ActionIcon name="x" size={17} /> Cancelar
           </button>
           <LoadingButton
             className={styles.primaryButton}
@@ -375,6 +378,7 @@ function SleepSheets({
             pendingAriaLabel="Borrando descanso"
             type="submit"
           >
+            <ActionIcon name="trash" size={17} />
             Borrar
           </LoadingButton>
         </div>
@@ -531,6 +535,7 @@ function SleepFormSheet({
             }
             type="submit"
           >
+            <ActionIcon name={finishOnly ? "stop" : startingOnly ? "play" : "check"} size={17} />
             {finishOnly ? "Finalizar" : startingOnly ? "Iniciar" : "Guardar"}
           </LoadingButton>
         </div>

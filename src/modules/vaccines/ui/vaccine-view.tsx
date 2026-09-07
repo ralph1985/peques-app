@@ -20,6 +20,7 @@ import { StandaloneApplicationSheet } from "./standalone-application-sheet";
 import { BottomSheet } from "@/shared/ui/bottom-sheet";
 import { localDate } from "@/shared/domain/validation";
 import styles from "@/app/(app)/vacunas/page.module.css";
+import { ActionIcon } from "@/shared/ui/action-icon";
 
 type EditState = {
   mode: "plan" | "apply" | "application" | "reopen";
@@ -144,24 +145,30 @@ export function VaccineView({ childId, data }: { childId: string; data: ChildDat
                   <div className={styles.doseActions} data-tutorial-target="vaccines-mark-applied">
                     <button
                       className="text-button"
+                      aria-label={dose.application ? "Editar aplicación" : "Marcar aplicada"}
+                      title={dose.application ? "Editar aplicación" : "Marcar aplicada"}
                       onClick={() =>
                         setSheet({ mode: dose.application ? "application" : "apply", dose })
                       }
                     >
-                      {dose.application ? "Editar aplicación" : "Marcar aplicada"}
+                      <ActionIcon name={dose.application ? "edit" : "check"} size={18} />
                     </button>
                     <button
                       className="text-button"
+                      aria-label="Editar planificación"
+                      title="Editar planificación"
                       onClick={() => setSheet({ mode: "plan", dose })}
                     >
-                      Editar planificación
+                      <ActionIcon name="calendar" size={18} />
                     </button>
                     {dose.application && (
                       <button
                         className="text-button"
+                        aria-label="Volver a pendiente"
+                        title="Volver a pendiente"
                         onClick={() => setSheet({ mode: "reopen", dose })}
                       >
-                        Volver a pendiente
+                        <ActionIcon name="refresh" size={18} />
                       </button>
                     )}
                   </div>
@@ -180,7 +187,7 @@ export function VaccineView({ childId, data }: { childId: string; data: ChildDat
         <h2>Otras vacunas aplicadas</h2>
         <p>Para registros que no corresponden a una dosis de la planificación.</p>
         <button className="text-button" onClick={() => setStandalone({})}>
-          Añadir vacuna aplicada
+          <ActionIcon name="plus" size={18} /> Añadir vacuna aplicada
         </button>
         <ul className="child-list">
           {data.applied
@@ -199,16 +206,20 @@ export function VaccineView({ childId, data }: { childId: string; data: ChildDat
                 </div>
                 <div className="row-actions">
                   <button
+                    className={styles.iconButton}
                     aria-label={`Editar aplicación de ${dose.vaccineName}`}
+                    title={`Editar aplicación de ${dose.vaccineName}`}
                     onClick={() => setStandalone({ entry: dose })}
                   >
-                    Editar
+                    <ActionIcon name="edit" />
                   </button>
                   <button
+                    className={styles.deleteIconButton}
                     aria-label={`Borrar aplicación de ${dose.vaccineName}`}
+                    title={`Borrar aplicación de ${dose.vaccineName}`}
                     onClick={() => setStandalone({ entry: dose, deleting: true })}
                   >
-                    Borrar
+                    <ActionIcon name="trash" />
                   </button>
                 </div>
               </li>

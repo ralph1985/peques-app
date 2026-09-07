@@ -8,6 +8,7 @@ import { ChildForm } from "@/modules/profile/ui/child-form";
 import { BackupPanel } from "@/modules/backup/ui/backup-panel";
 import { BottomSheet } from "@/shared/ui/bottom-sheet";
 import { LocalForm, field } from "@/shared/ui/local-form";
+import { ActionIcon } from "@/shared/ui/action-icon";
 import styles from "./(app)/peso/page.module.css";
 
 export function PequesRoot({ children }: { children: ReactNode }) {
@@ -24,7 +25,9 @@ export function PequesRoot({ children }: { children: ReactNode }) {
           No se ha borrado nada. Comprueba que el navegador permite el almacenamiento del sitio y
           que tienes espacio disponible.
         </p>
-        <button onClick={() => window.location.reload()}>Reintentar</button>
+        <button className="primary-button" onClick={() => window.location.reload()}>
+          <ActionIcon name="refresh" size={18} /> Reintentar
+        </button>
       </main>
     );
   if (!state?.data)
@@ -58,7 +61,7 @@ export function PequesRoot({ children }: { children: ReactNode }) {
               aria-label={`Cambiar hijo: ${family.activeChild?.name ?? "Seleccionar"}`}
             >
               {family.activeChild?.name ?? "Seleccionar hijo"}
-              <span aria-hidden="true">⌄</span>
+              <ActionIcon name="chevron-down" size={17} />
             </button>
           </header>
           <div key={family.activeChild?.id ?? "none"}>{children}</div>
@@ -103,7 +106,7 @@ export function PequesRoot({ children }: { children: ReactNode }) {
                   </label>
                 </LocalForm>
                 <button className="text-button" onClick={() => setAdding(true)}>
-                  Añadir otro hijo
+                  <ActionIcon name="plus" size={18} /> Añadir otro hijo
                 </button>
               </>
             )}

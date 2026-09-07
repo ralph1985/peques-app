@@ -71,6 +71,10 @@
 }
 .primary,
 .secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
   border: 0;
   border-radius: 14px;
   padding: 12px 18px;

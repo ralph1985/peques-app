@@ -10,6 +10,7 @@ import { BottomSheet } from "@/shared/ui/bottom-sheet";
 import { field, LocalForm } from "@/shared/ui/local-form";
 import { assert, localDate } from "@/shared/domain/validation";
 import styles from "@/app/(app)/peso/page.module.css";
+import { ActionIcon } from "@/shared/ui/action-icon";
 
 export function GrowthMeasurementPanel({
   childId,
@@ -34,7 +35,7 @@ export function GrowthMeasurementPanel({
       <div className={styles.sectionTitle}>
         <h2>Otras medidas</h2>
         <button className="text-button" onClick={() => setSheet({ mode: "add" })} type="button">
-          Añadir medida
+          <ActionIcon name="plus" size={18} /> Añadir medida
         </button>
       </div>
       {!measurements.length ? (
@@ -58,18 +59,20 @@ export function GrowthMeasurementPanel({
                   <button
                     className={styles.iconButton}
                     aria-label={`Editar medida del ${entry.measuredOn}`}
+                    title={`Editar medida del ${entry.measuredOn}`}
                     onClick={() => setSheet({ mode: "edit", entry })}
                     type="button"
                   >
-                    ✎
+                    <ActionIcon name="edit" />
                   </button>
                   <button
                     className={styles.iconButton}
                     aria-label={`Borrar medida del ${entry.measuredOn}`}
+                    title={`Borrar medida del ${entry.measuredOn}`}
                     onClick={() => setSheet({ mode: "delete", entry })}
                     type="button"
                   >
-                    ×
+                    <ActionIcon name="trash" />
                   </button>
                 </div>
               </li>

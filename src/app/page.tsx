@@ -14,6 +14,7 @@ import { filterCalendarEvents } from "@/modules/calendar/domain/calendar-event";
 import { formatCalendarEventDate } from "@/modules/calendar/ui/calendar-date-format";
 import { WeightForm } from "@/modules/weight/ui/weight-view";
 import { BottomSheet } from "@/shared/ui/bottom-sheet";
+import { ActionIcon } from "@/shared/ui/action-icon";
 import styles from "./(app)/page.module.css";
 import sheetStyles from "./(app)/peso/page.module.css";
 
@@ -155,7 +156,7 @@ export default function Home() {
           data-tutorial-target="home-add"
           onClick={() => setSheet("add")}
         >
-          <span aria-hidden="true">+</span> Añadir
+          <ActionIcon name="plus" size={21} /> Añadir
         </button>
       </div>
       {sheet && (
@@ -176,20 +177,20 @@ export default function Home() {
             ) : (
               <div className={styles.addMenuOptions}>
                 <button className={styles.addMenuButton} onClick={() => setSheet("weight")}>
-                  Peso
+                  <ActionIcon name="plus" size={18} /> Peso
                 </button>
                 <Link
                   className={styles.addMenuButton}
                   href="/vacunas"
                   onClick={() => setSheet(null)}
                 >
-                  Vacuna
+                  <ActionIcon name="plus" size={18} /> Vacuna
                 </Link>
                 <Link className={styles.addMenuButton} href="/sueno" onClick={() => setSheet(null)}>
-                  Sueño
+                  <ActionIcon name="moon" size={18} /> Sueño
                 </Link>
                 <Link className={styles.addMenuButton} href="/viaje" onClick={() => setSheet(null)}>
-                  Elemento de viaje
+                  <ActionIcon name="archive" size={18} /> Elemento de viaje
                 </Link>
               </div>
             )}

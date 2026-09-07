@@ -4,6 +4,7 @@ import { useState } from "react";
 import { usePeques } from "@/shared/ui/app-context";
 import { field, LocalForm } from "@/shared/ui/local-form";
 import { healthRegionLabels, healthRegions, type HealthRegion } from "../domain/settings";
+import { ActionIcon } from "@/shared/ui/action-icon";
 
 export function HealthSettingsPanel() {
   const { app, family } = usePeques();
@@ -45,10 +46,10 @@ export function HealthSettingsPanel() {
           </p>
           <div className="row-actions">
             <button className="primary-button" onClick={() => void applyRegion()} type="button">
-              Confirmar actualización
+              <ActionIcon name="check" size={18} /> Confirmar actualización
             </button>
             <button className="text-button" onClick={() => setPendingRegion(null)} type="button">
-              Cancelar
+              <ActionIcon name="x" size={18} /> Cancelar
             </button>
           </div>
         </div>
@@ -110,7 +111,7 @@ export function AppointmentPanel() {
           onClick={() => void app.settings.updateAppointment(null)}
           type="button"
         >
-          Quitar próxima cita
+          <ActionIcon name="trash" size={18} /> Quitar próxima cita
         </button>
       )}
     </section>

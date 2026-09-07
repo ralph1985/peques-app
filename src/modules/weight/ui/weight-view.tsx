@@ -23,6 +23,7 @@ import { GrowthMeasurementPanel } from "@/modules/growth/ui/growth-measurement-v
 import type { GrowthIndicator } from "@/modules/growth/application/who-growth";
 import styles from "@/app/(app)/peso/page.module.css";
 import { growthReferenceBirthDate } from "@/modules/profile/domain/baby-profile";
+import { ActionIcon } from "@/shared/ui/action-icon";
 
 export function WeightForm({
   childId,
@@ -112,8 +113,15 @@ export function WeightCreateButton({
         data-tutorial-target="weight-add"
         onClick={() => setOpen(true)}
         aria-label="Añadir peso"
+        title="Añadir peso"
       >
-        {compact ? "Añadir peso" : "+"}
+        {compact ? (
+          <>
+            <ActionIcon name="plus" size={18} /> Añadir peso
+          </>
+        ) : (
+          <ActionIcon name="plus" size={27} />
+        )}
       </button>
       {open && (
         <BottomSheet
@@ -220,15 +228,17 @@ export function WeightView({
                   className={styles.iconButton}
                   onClick={() => setSheet({ mode: "edit", entry })}
                   aria-label={`Editar peso del ${entry.measuredOn}`}
+                  title={`Editar peso del ${entry.measuredOn}`}
                 >
-                  ✎
+                  <ActionIcon name="edit" />
                 </button>
                 <button
                   className={styles.iconButton}
                   onClick={() => setSheet({ mode: "delete", entry })}
                   aria-label={`Borrar peso del ${entry.measuredOn}`}
+                  title={`Borrar peso del ${entry.measuredOn}`}
                 >
-                  ×
+                  <ActionIcon name="trash" />
                 </button>
               </div>
             </li>

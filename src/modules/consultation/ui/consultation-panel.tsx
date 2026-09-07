@@ -9,6 +9,7 @@ import { healthRegionLabels } from "@/modules/settings/domain/settings";
 import { assignPlannedVaccineDoseStatuses } from "@/modules/vaccines/domain/vaccine-calendar";
 import { summarizeSleepEntries } from "@/modules/sleep/application/sleep-summary";
 import { buildWeightHistory } from "@/modules/weight/application/weight-history";
+import { ActionIcon } from "@/shared/ui/action-icon";
 
 export function ConsultationPanel({
   child,
@@ -32,7 +33,7 @@ export function ConsultationPanel({
           <h1>Resumen de {child.name}</h1>
         </div>
         <button className="primary-button" onClick={() => window.print()} type="button">
-          Imprimir resumen
+          <ActionIcon name="printer" size={18} /> Imprimir resumen
         </button>
       </div>
       <p className="medical-boundary">
@@ -164,10 +165,12 @@ export function ConsultationPanel({
               </label>
               <button
                 className="text-button"
+                aria-label={`Borrar pregunta: ${question.text}`}
+                title={`Borrar pregunta: ${question.text}`}
                 onClick={() => void app.settings.deleteConsultationQuestion(question.id)}
                 type="button"
               >
-                Borrar
+                <ActionIcon name="trash" size={18} />
               </button>
             </li>
           ))}

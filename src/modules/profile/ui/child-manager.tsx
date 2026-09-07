@@ -9,6 +9,7 @@ import { LocalForm, field, errorMessage } from "@/shared/ui/local-form";
 import { BackupExportButton } from "@/modules/backup/ui/backup-panel";
 import styles from "@/app/(app)/peso/page.module.css";
 import ui from "@/shared/ui/local-form.module.css";
+import { ActionIcon } from "@/shared/ui/action-icon";
 
 type Sheet =
   | { mode: "create" }
@@ -37,7 +38,7 @@ export function ChildManager() {
       <div className="section-heading">
         <h2 id="children-title">Tus peques</h2>
         <button className={ui.secondary} onClick={() => setSheet({ mode: "create" })}>
-          Añadir hijo
+          <ActionIcon name="plus" size={18} /> Añadir hijo
         </button>
       </div>
       <ul className="child-list">
@@ -49,16 +50,20 @@ export function ChildManager() {
             </div>
             <div className="row-actions">
               <button
+                className={styles.iconButton}
                 onClick={() => setSheet({ mode: "edit", child })}
                 aria-label={`Editar ${child.name}`}
+                title={`Editar ${child.name}`}
               >
-                Editar
+                <ActionIcon name="edit" />
               </button>
               <button
+                className={styles.deleteIconButton}
                 onClick={() => void prepareDelete(child)}
                 aria-label={`Eliminar ${child.name}`}
+                title={`Eliminar ${child.name}`}
               >
-                Eliminar
+                <ActionIcon name="trash" />
               </button>
             </div>
           </li>

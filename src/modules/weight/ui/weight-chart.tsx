@@ -10,6 +10,7 @@ import {
 import { getWeightPlaceLabel } from "../application/weight-filter";
 import { WeightEntry } from "../domain/weight-entry";
 import styles from "../../../app/(app)/peso/page.module.css";
+import { ActionIcon } from "@/shared/ui/action-icon";
 
 type WeightChartProps = {
   birthDate: string;
@@ -110,7 +111,7 @@ export function WeightChart({ birthDate, entries, sex }: WeightChartProps) {
             ref={expandButtonRef}
             type="button"
           >
-            Ver grande
+            <ActionIcon name="expand" size={17} /> Ver grande
           </button>
         </div>
       </div>
@@ -163,7 +164,7 @@ export function WeightChart({ birthDate, entries, sex }: WeightChartProps) {
                 onClick={closeExpandedChart}
                 type="button"
               >
-                Cerrar
+                <ActionIcon name="x" size={17} /> Cerrar
               </button>
             </div>
             <div className={styles.chartFullscreenCanvas}>

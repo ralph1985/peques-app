@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { ActionIcon } from "./action-icon";
 
 export function PwaRuntime() {
   const [waiting, setWaiting] = useState<ServiceWorker | null>(null);
@@ -51,7 +52,7 @@ export function PwaRuntime() {
           waiting.postMessage({ type: "SKIP_WAITING" });
         }}
       >
-        Actualizar aplicación
+        <ActionIcon name="refresh" size={18} /> Actualizar aplicación
       </button>
     </aside>
   );

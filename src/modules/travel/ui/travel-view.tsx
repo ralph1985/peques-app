@@ -16,6 +16,7 @@ import { createTravelChecklistItem } from "../application/create-travel-checklis
 import { updateTravelChecklistItem } from "../application/update-travel-checklist-item";
 import { TravelOrganization } from "./travel-organization";
 import styles from "@/app/(app)/viaje/page.module.css";
+import { ActionIcon } from "@/shared/ui/action-icon";
 
 type ItemSheet =
   | { mode: "create"; category?: string }
@@ -165,17 +166,19 @@ export function TravelView() {
           <button
             className={styles.iconCommandButton}
             aria-label="Añadir a la lista"
+            title="Añadir a la lista"
             data-tutorial-target="travel-add"
             onClick={() => setSheet({ mode: "create" })}
           >
-            +
+            <ActionIcon name="plus" size={20} />
           </button>
           <button
             className={styles.iconCommandButton}
             aria-label="Reiniciar lista"
+            title="Reiniciar lista"
             onClick={() => setSheet({ mode: "reset" })}
           >
-            ↺
+            <ActionIcon name="refresh" size={20} />
           </button>
         </div>
         <p className={styles.orderHint}>
@@ -225,8 +228,9 @@ export function TravelView() {
                     className="text-button"
                     onClick={() => setSheet({ mode: "create", category: group.id })}
                     aria-label={`Añadir a ${group.label}`}
+                    title={`Añadir a ${group.label}`}
                   >
-                    + Añadir
+                    <ActionIcon name="plus" size={18} />
                   </button>
                 )}
               </details>
@@ -339,8 +343,11 @@ function ItemRow({
           aria-pressed={item.isPacked}
           disabled={disabled}
           onClick={onToggle}
+          title={
+            item.isPacked ? `Marcar pendiente: ${item.label}` : `Marcar preparado: ${item.label}`
+          }
         >
-          {item.isPacked ? "✓" : ""}
+          {item.isPacked ? <ActionIcon name="check" size={18} /> : null}
         </button>
       </div>
       <div className={styles.itemBody}>
@@ -352,8 +359,9 @@ function ItemRow({
         ref={handleRef}
         aria-label={`Mover ${item.label}`}
         disabled={disabled}
+        title={`Mover ${item.label}`}
       >
-        ⋮⋮
+        <ActionIcon name="grip" size={18} />
       </button>
       <div className={styles.itemActions}>
         <button
@@ -361,16 +369,18 @@ function ItemRow({
           aria-label={`Editar ${item.label}`}
           disabled={disabled}
           onClick={onEdit}
+          title={`Editar ${item.label}`}
         >
-          ✎
+          <ActionIcon name="edit" />
         </button>
         <button
           className={styles.dangerIconButton}
           aria-label={`Borrar ${item.label}`}
           disabled={disabled}
           onClick={onDelete}
+          title={`Borrar ${item.label}`}
         >
-          ×
+          <ActionIcon name="trash" />
         </button>
       </div>
     </li>

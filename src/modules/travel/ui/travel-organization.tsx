@@ -8,6 +8,7 @@ import type {
   TravelStorageLocation,
 } from "../domain/travel-checklist-item";
 import styles from "@/app/(app)/viaje/page.module.css";
+import { ActionIcon } from "@/shared/ui/action-icon";
 
 type OrganizationSheet =
   | { kind: "category"; value?: TravelChecklistCategoryDefinition; deleting?: boolean }
@@ -36,23 +37,27 @@ export function TravelOrganization({
                 <strong>{value.label}</strong>
                 <div className="row-actions">
                   <button
+                    className={styles.iconButton}
                     aria-label={`Editar categoría ${value.label}`}
+                    title={`Editar categoría ${value.label}`}
                     onClick={() => setSheet({ kind: "category", value })}
                   >
-                    Editar
+                    <ActionIcon name="edit" />
                   </button>
                   <button
+                    className={styles.dangerIconButton}
                     aria-label={`Borrar categoría ${value.label}`}
+                    title={`Borrar categoría ${value.label}`}
                     onClick={() => setSheet({ kind: "category", value, deleting: true })}
                   >
-                    Borrar
+                    <ActionIcon name="trash" />
                   </button>
                 </div>
               </li>
             ))}
           </ul>
           <button className="text-button" onClick={() => setSheet({ kind: "category" })}>
-            Crear categoría
+            <ActionIcon name="plus" size={18} /> Crear categoría
           </button>
           <h3>Ubicaciones y compartimentos</h3>
           <ul className="child-list">
@@ -68,23 +73,27 @@ export function TravelOrganization({
                 </div>
                 <div className="row-actions">
                   <button
+                    className={styles.iconButton}
                     aria-label={`Editar ubicación ${value.label}`}
+                    title={`Editar ubicación ${value.label}`}
                     onClick={() => setSheet({ kind: "location", value })}
                   >
-                    Editar
+                    <ActionIcon name="edit" />
                   </button>
                   <button
+                    className={styles.dangerIconButton}
                     aria-label={`Borrar ubicación ${value.label}`}
+                    title={`Borrar ubicación ${value.label}`}
                     onClick={() => setSheet({ kind: "location", value, deleting: true })}
                   >
-                    Borrar
+                    <ActionIcon name="trash" />
                   </button>
                 </div>
               </li>
             ))}
           </ul>
           <button className="text-button" onClick={() => setSheet({ kind: "location" })}>
-            Crear ubicación
+            <ActionIcon name="plus" size={18} /> Crear ubicación
           </button>
         </div>
       </details>
