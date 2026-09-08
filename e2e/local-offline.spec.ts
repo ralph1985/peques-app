@@ -185,6 +185,19 @@ test("mobile flows persist through browser restart and entirely offline CRUD", a
   await expect(page.getByRole("heading", { name: /Durmiendo desde/ })).toBeVisible();
   await expect(page.getByText("Se durmió tranquila.", { exact: true })).toBeVisible();
   await visit("/viaje/");
+  const emptyTravelRows = page.getByText("Sin elementos", { exact: true });
+  await expect(emptyTravelRows).toHaveCount(7);
+  const emptyRowsFit = await emptyTravelRows.evaluateAll((elements) =>
+    elements.every((element) => {
+      const row = element.getBoundingClientRect();
+      const list = element.parentElement?.getBoundingClientRect();
+      return Boolean(list && row.width >= list.width - 2);
+    }),
+  );
+  expect(emptyRowsFit).toBe(true);
+  await page.getByRole("button", { name: "Dónde está", exact: true }).click();
+  await expect(page.getByText("Sin elementos", { exact: true })).toHaveCount(1);
+  await page.getByRole("button", { name: "Preparar", exact: true }).click();
   await page.getByRole("button", { name: "Añadir a la lista", exact: true }).click();
   await page.getByRole("dialog").getByLabel("Elemento", { exact: true }).fill("Elemento ficticio");
   await page.getByRole("dialog").getByRole("button", { name: "Añadir elemento" }).click();

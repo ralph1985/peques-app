@@ -221,7 +221,7 @@ export function TravelView() {
                       }
                     />
                   ))}
-                  {!group.items.length && <li className={styles.empty}>Sin elementos</li>}
+                  {!group.items.length && <li className={styles.emptyGroupDrop}>Sin elementos</li>}
                 </DropZone>
                 {view === "prepare" && (
                   <button
